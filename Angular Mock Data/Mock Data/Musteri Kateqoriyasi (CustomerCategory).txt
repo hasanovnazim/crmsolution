@@ -1,0 +1,14 @@
+[
+ { 
+   "id": 1,
+   "CustomerCategory": "Siradan"		
+ },
+ { 
+   "id": 2,
+   "CustomerCategory": "Ozel"   		
+ },
+ { 
+   "id": 3,
+   "CustomerCategory": "Test"		
+ }
+]

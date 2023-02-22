@@ -1,0 +1,14 @@
+[
+ { 
+   "id": 1,
+   "PresentName": "PashaGroup Endirimi"		
+ },
+ { 
+   "id": 2,
+   "PresentName": "Bravo Endirimi"		
+ },
+ { 
+   "id": 3,
+   "PresentName": "Parfumery Endirimi"		
+ },
+]

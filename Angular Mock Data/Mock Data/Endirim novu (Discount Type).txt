@@ -1,0 +1,17 @@
+[
+ { 
+   "id": 1,
+   "SalesCampaignId": 1
+   "SalesType": "Mebleg Endirimi"		
+ },
+ { 
+   "id": 2,
+   "SalesCampaignId": 1
+   "SalesType": Faiz Endirimi"		  		
+ },
+ { 
+   "id": 3,
+   "SalesCampaignId": 2
+   "SalesType": "Hediyye Secimi"				
+ }
+]

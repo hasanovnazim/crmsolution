@@ -1,0 +1,46 @@
+[
+ { 
+   "id": 1,
+   "CampaignName": "Admin",
+   "InsuranceType": "Admin",
+   "Series": "Admin",
+   "CustomersCategory": "Admin",
+   "SecondCustCat": "Admin",
+   "EventHistory": "Admin",
+   "StartDate": "01.07.1992",
+   "ExpireDate": "01.07.2023"		
+ },
+ { 
+   "id": 1,
+   "CampaignName": "Test1",
+   "InsuranceType": "Test1",
+   "Series": "Test1",
+   "CustomersCategory": "Test1",
+   "SecondCustCat": "Test1",
+   "EventHistory": "Test1",
+   "StartDate": "11.17.1992",
+   "ExpireDate": "11.17.2023"		
+ },
+ { 
+   "id": 1,
+   "CampaignName": "Test2",
+   "InsuranceType": "Test2",
+   "Series": "Test2",
+   "CustomersCategory": "Test2",
+   "SecondCustCat": "Test2",
+   "EventHistory": "Test2",
+   "StartDate": "21.27.1992",
+   "ExpireDate": "21.27.2023"		
+ },
+ { 
+   "id": 1,
+   "CampaignName": "Test3",
+   "InsuranceType": "Test3",
+   "Series": "Test3",
+   "CustomersCategory": "Test3",
+   "SecondCustCat": "Test3",
+   "EventHistory": "Test",
+   "StartDate": "03.03.1992",
+   "ExpireDate": "03.03.2023"		
+ }
+]

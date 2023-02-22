@@ -1,0 +1,14 @@
+[
+ { 
+   "id": 1,
+   "CamCusCat": "Test1"		
+ },
+ { 
+   "id": 2,
+   "CamCusCat": "Test2"   		
+ },
+ { 
+   "id": 3,
+   "CamCusCat": "Test3"		
+ }
+]

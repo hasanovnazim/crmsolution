@@ -1,0 +1,14 @@
+[
+ { 
+   "id": 1,
+   "InsuranceName": "Tam Kasko"		
+ },
+ { 
+   "id": 2,
+   "InsuranceName": "Optimal Kasko"   		
+ },
+ { 
+   "id": 3,
+   "InsuranceName": "Parking Kasko"		
+ }
+]
