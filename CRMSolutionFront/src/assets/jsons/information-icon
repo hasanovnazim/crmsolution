@@ -1,0 +1,14 @@
+[
+ { 
+   "id": 1,
+   "CampaignId": "1",
+   "Description": "Admin",
+   "SecondDescription": "Admin"	
+ },
+ { 
+   "id": 2,
+   "CampaignId": "2",
+   "Description": "Admin",
+   "SecondDescription": "Admin"
+ }
+]

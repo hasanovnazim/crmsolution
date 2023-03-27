@@ -1,0 +1,10 @@
+[
+ { 
+   "id": 1,
+   "SalesCampaign": "Endirim kampanyası"		
+ },
+ { 
+   "id": 2,
+   "SalesCampaign": "Hədiyyə kampanyası"		  		
+ }
+]

@@ -1,0 +1,61 @@
+<button nz-button nzType="primary" routerLink="add">Add Campaign</button>
+
+
+<nz-table
+  *ngIf="campaignList.length"
+  #campaignListTable
+  [nzData]="campaignList"
+  nzTableLayout="fixed"
+>
+  <thead>
+    <tr>
+      <th
+        *ngFor="let column of columns"
+        [nzSortOrder]="column.sortOrder"
+        [nzSortFn]="column.sortFn"
+        [nzSortDirections]="column.sortDirections"
+        [nzFilterMultiple]="column.filterMultiple"
+        [nzFilters]="column.listOfFilter"
+        [nzFilterFn]="column.filterFn"
+      >
+        {{ column.name }}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of campaignList">
+      <td>{{ data.CampaignName }}</td>
+      <td>{{ data.InsuranceType }}</td>
+      <td>{{ data.Series }}</td>
+      <td>{{ data.CustomersCategory }}</td>
+      <td>{{ data.SecondCustCat }}</td>
+      <td>{{ data.EventHistory }}</td>
+      <td>{{ data.StartDate }}</td>
+      <td>{{ data.ExpireDate }}</td>
+      <td>
+        <button nz-button nzType="primary">
+          <span nz-icon nzType="copy"></span>
+          Kopyalamaq
+        </button>
+      </td>
+      <td>
+        <button nz-button nzType="default" nzShape="circle">
+          <span nz-icon nzType="edit"></span>
+        </button>
+        <button nz-button nzType="default" nzShape="circle" (click)="showModal()">
+          <span nz-icon nzType="info-circle"></span>
+        </button>
+        <button nz-button nzType="default" nzShape="circle">
+          <span nz-icon nzType="delete"></span>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+<nz-modal [(nzVisible)]="isVisible" nzTitle="The first Modal" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+  <ng-container *nzModalContent>
+    <p>Kampaniya adı - Neftçilər 40%</p>
+    <p>Sığorta növü  - Avtomobil sığortası</p>
+    <p>Seriya        - I-MIC</p>
+  </ng-container>
+</nz-modal>

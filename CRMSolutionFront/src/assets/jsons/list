@@ -1,0 +1,46 @@
+[
+  { 
+    "id": 1,
+    "CampaignName": "Neftciler 40%",
+    "InsuranceType": "Avtomobil sığortası",
+    "Series": "I-MIC",
+    "CustomersCategory": "Fiziki",
+    "SecondCustCat": "Bütün müştərilər",
+    "EventHistory": "Hadisəsi olmuş müştəri",
+    "StartDate": "01.07.1992",
+    "ExpireDate": "01.07.2023"		
+  },
+  { 
+    "id": 1,
+    "CampaignName": "Od Çərşənbəsi",
+    "InsuranceType": "Avtomobil sığortası",
+    "Series": "I-MIO",
+    "CustomersCategory": "Hüquqi",
+    "SecondCustCat": "Yeni müştəri",
+    "EventHistory": "Bütün  ",
+    "StartDate": "11.17.1992",
+    "ExpireDate": "11.17.2023"		
+  },
+  { 
+    "id": 1,
+    "CampaignName": "Yaşıl Bakı",
+    "InsuranceType": "Əmlak sığortası",
+    "Series": "I-MIC",
+    "CustomersCategory": "Hüquqi",
+    "SecondCustCat": "Yeniləmə müştəri",
+    "EventHistory": "Hadisəsi olmuş müştəri",
+    "StartDate": "21.27.1992",
+    "ExpireDate": "21.27.2023"		
+  },
+  { 
+    "id": 1,
+    "CampaignName": "Santa Kaski",
+    "InsuranceType": "Tibbi sığorta",
+    "Series": "I-MIP",
+    "CustomersCategory": "Fiziki",
+    "SecondCustCat": "Yeniləmə müştəri",
+    "EventHistory": "Hadisəsi olmamış müştəri",
+    "StartDate": "03.03.1992",
+    "ExpireDate": "03.03.2023"		
+  }
+ ]

@@ -1,0 +1,14 @@
+[
+ { 
+   "id": 1,
+   "InsuranceName": "Avtomobil sığortası"		
+ },
+ { 
+   "id": 2,
+   "InsuranceName": "Əmlak sığortası"   		
+ },
+ { 
+   "id": 3,
+   "InsuranceName": "Tibbi sığorta"		
+ }
+]

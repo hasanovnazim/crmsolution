@@ -1,0 +1,10 @@
+[
+ { 
+   "id": 1,
+   "CustomerCategory": "Hüquqi"		
+ },
+ { 
+   "id": 2,
+   "CustomerCategory": "Fiziki"   		
+ }
+]

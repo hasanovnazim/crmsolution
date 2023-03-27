@@ -1,0 +1,14 @@
+[
+ { 
+   "id": 1,
+   "EventHistory": "Hadisəsi olmuş müştərilər"		
+ },
+ { 
+   "id": 2,
+   "EventHistory": "Hadisəsi olmamış müştərilər"		  		
+ },
+ { 
+   "id": 3,
+   "EventHistory": "Bütün müştərilər"				
+ }
+]

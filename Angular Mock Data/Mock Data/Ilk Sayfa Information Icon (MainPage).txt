@@ -1,8 +1,0 @@
-[
- { 
-   "id": 1,
-   "CampaignId": "1",
-   "Description": "Admin",
-   "SecondDescription": "Admin",		
- }
-]

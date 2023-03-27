@@ -1,0 +1,251 @@
+<nz-input-group [nzSize]="'large'">
+  <div class="wrapper">
+    <div class="header">
+      <button nz-button nzType="primary" nzShape="circle">1</button>
+      <h5 nz-typography>Ümumi məlumatlar</h5>
+    </div>
+    <div class="content">
+      <div nz-row [nzGutter]="24">
+        <div nz-col nzSpan="12">
+          <nz-select
+            [nzSize]="'large'"
+            [(ngModel)]="insuredTypesModel"
+            nzPlaceHolder="Sığorta növü"
+          >
+            <nz-option *ngFor="let option of insuredTypes" [nzValue]="option.id" [nzLabel]="option.InsuranceName"></nz-option>
+          </nz-select>
+        </div>
+        <div nz-col nzSpan="12">
+          <nz-select
+            [nzSize]="'large'"
+            [(ngModel)]="seriesModel"
+            nzMode="tags"
+            nzPlaceHolder="Seriyalar"
+          >
+            <nz-option *ngFor="let option of series" [nzValue]="option.id" [nzLabel]="option.Series"></nz-option>
+          </nz-select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wrapper">
+    <div class="header">
+      <button nz-button nzType="primary" nzShape="circle">2</button>
+      <h5 nz-typography>Müştəri məlumatları</h5>
+    </div>
+    <div class="content">
+      <div nz-row [nzGutter]="24">
+        <div nz-col nzSpan="8">
+          <nz-select
+            [nzSize]="'large'"
+            [(ngModel)]="customerCategoryModel"
+            nzMode="tags" 
+            nzPlaceHolder="Sığortalı növü"
+          >
+            <nz-option *ngFor="let option of customerCategory" [nzValue]="option.id" [nzLabel]="option.CustomerCategory"></nz-option>
+          </nz-select>
+        </div>
+        <div nz-col nzSpan="8">
+          <nz-select
+            [nzSize]="'large'"
+            [(ngModel)]="customerCategoryRefundModel"
+            nzPlaceHolder="Müştəri kateqoriyası"
+          >
+            <nz-option *ngFor="let option of customerCategoryRefund" [nzValue]="option.id" [nzLabel]="option.CustomerCategoryRefund"></nz-option>
+          </nz-select>
+        </div>
+        <div nz-col nzSpan="8" >
+          <nz-select
+            [nzSize]="'large'"
+            [(ngModel)]="eventHistoryModel"
+            nzPlaceHolder="Hadisə tarixçəsi"
+            [disabled]="customerCategoryRefundModel === 1"
+          >
+            <nz-option *ngFor="let option of eventHistory" [nzValue]="option.id" [nzLabel]="option.EventHistory"></nz-option>
+          </nz-select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wrapper">
+    <div class="header">
+      <button nz-button nzType="primary" nzShape="circle">3</button>
+      <h5 nz-typography>Kampaniya məlumatları</h5>
+    </div>
+    <div class="content">
+      <div nz-row [nzGutter]="24">
+        <div nz-col nzSpan="12">
+          <input 
+            type="text" 
+            nz-input 
+            [ngModel]="''" 
+            placeholder="Kampaniya adı" 
+          />
+        </div>
+        <div nz-col nzSpan="12">
+          <input 
+            type="text" 
+            nz-input 
+            [ngModel]="''" 
+            placeholder="Minimum sığorta haqqı" 
+          />
+        </div>
+      </div>
+      <div nz-row [nzGutter]="24">
+        <div nz-col nzSpan="12">
+          <input 
+            type="text" 
+            nz-input 
+            [ngModel]="''" 
+            placeholder="Promo kod" 
+          />
+        </div>
+        <div nz-col nzSpan="12">
+          <nz-select
+            [nzSize]="'large'"
+            [(ngModel)]="salesCampaignModel"
+            nzPlaceHolder="Satış kampaniyası"
+          >
+            <nz-option *ngFor="let option of salesCampaign" [nzValue]="option.id" [nzLabel]="option.SalesCampaign"></nz-option>
+          </nz-select>
+        </div>
+      </div>
+      <div nz-row [nzGutter]="24" *ngIf="salesCampaignModel === 1"> 
+        <div nz-col nzSpan="12">
+          <nz-select
+            [nzSize]="'large'"
+            [(ngModel)]="discountTypeModel"
+            nzPlaceHolder="Endirim növü"
+          >
+            <nz-option *ngFor="let option of discountType" [nzValue]="option.SalesCampaignId" [nzLabel]="option.SalesType"></nz-option>
+          </nz-select>
+        </div>
+      </div>
+      <div nz-row [nzGutter]="24" *ngIf="salesCampaignModel === 2">
+        <div nz-col nzSpan="12">
+          <nz-select
+            [nzSize]="'large'"
+            nzMode="tags" 
+            [(ngModel)]="presentsModel"
+            nzPlaceHolder="Hədiyyə seçimi"
+          >
+            <nz-option *ngFor="let option of presents" [nzValue]="option.id" [nzLabel]="option.PresentName"></nz-option>
+          </nz-select>
+        </div>  
+      </div>
+      <div nz-row *ngIf="discountTypeModel === 1">
+        <nz-form-item *ngFor="let control of listOfControl; let i = index">
+          <div nz-row [nzGutter]="24">
+            <div nz-col nzSpan="6">
+              <input 
+                type="text" 
+                nz-input 
+                [ngModel]="''" 
+                placeholder="Minimum s.h." 
+              />
+            </div>
+            <div nz-col nzSpan="6">
+              <input 
+                type="text" 
+                nz-input 
+                [ngModel]="''" 
+                placeholder="Maksimum s.h." 
+              />
+            </div>
+            <div nz-col nzSpan="10">
+              <input 
+                type="text" 
+                nz-input 
+                [ngModel]="''" 
+                placeholder="Endirim məbləği" 
+              />
+            </div>
+            <div nz-col nzSpan="2">
+              <button (click)="removeField(control, $event)" nz-button nzType="default" nzShape="circle">
+                <span nz-icon nzType="delete"></span>
+              </button>
+            </div>
+          </div>
+        </nz-form-item>
+        <button nz-button [nzSize]="'large'" nzType="primary" (click)="addField($event)">
+          <span nz-icon nzType="plus"></span>
+          Əlavə et
+        </button>
+      </div>
+      <div nz-row *ngIf="discountTypeModel === 2">
+        <nz-form-item *ngFor="let control of listOfControl; let i = index">
+          <div nz-row [nzGutter]="24">
+            <div nz-col nzSpan="6">
+              <input 
+                type="text" 
+                nz-input 
+                [ngModel]="''" 
+                placeholder="Minimum s.h." 
+              />
+            </div>
+            <div nz-col nzSpan="6">
+              <input 
+                type="text" 
+                nz-input 
+                [ngModel]="''" 
+                placeholder="Maksimum s.h." 
+              />
+            </div>
+            <div nz-col nzSpan="10">
+              <input 
+                type="text" 
+                nz-input 
+                [ngModel]="''" 
+                placeholder="Endirim faizi" 
+              />
+            </div>
+            <div nz-col nzSpan="2">
+              <button (click)="removeField(control, $event)" nz-button nzType="default" nzShape="circle">
+                <span nz-icon nzType="delete"></span>
+              </button>
+            </div>
+          </div>
+        </nz-form-item>
+        <button nz-button [nzSize]="'large'" nzType="primary" (click)="addField($event)">
+          <span nz-icon nzType="plus"></span>
+          Əlavə et
+        </button>
+      </div>
+      <div nz-row [nzGutter]="24">
+        <div nz-col nzSpan="12">
+          <nz-date-picker
+            [nzDisabledDate]="disabledStartDate"
+            nzShowTime
+            nzFormat="yyyy-MM-dd HH:mm:ss"
+            [(ngModel)]="startValue"
+            nzPlaceHolder="Başlama tarixi"
+            (nzOnOpenChange)="handleStartOpenChange($event)"
+            [nzSize]="'large'"
+          ></nz-date-picker>
+        </div>
+        <div nz-col nzSpan="12">
+          <nz-date-picker
+            #endDatePicker
+            [nzDisabledDate]="disabledEndDate"
+            nzShowTime
+            nzFormat="yyyy-MM-dd HH:mm:ss"
+            [(ngModel)]="endValue"
+            nzPlaceHolder="Bitmə tarixi"
+            (nzOnOpenChange)="handleEndOpenChange($event)"
+            [nzSize]="'large'"
+          ></nz-date-picker>
+        </div>
+      </div>
+      <div nz-row [nzGutter]="24">
+        <div nz-col nzSpan="24">
+          <textarea rows="4" nz-input></textarea>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  <div class="wrapper-button">
+    <button nz-button [nzSize]="'large'" nzType="primary">ƏLAVƏ ET</button>
+    <button nz-button [nzSize]="'large'" nzType="default">İMTİNA ET</button>
+  </div>
+</nz-input-group>

@@ -1,0 +1,30 @@
+h5 {
+  margin: 0 0 0 8px;
+  padding: 0;
+  display: inline-block;
+}
+.content {
+  margin: 12px 0 24px;
+}
+nz-select,
+nz-date-picker {
+  width: 100%;
+}
+
+[nz-row] + [nz-row] {
+  margin-top: 16px;
+}
+
+.wrapper {
+  margin-bottom: 40px;
+}
+
+.wrapper-button {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+nz-form-item {
+  margin-bottom: 12px;
+}

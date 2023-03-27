@@ -1,0 +1,14 @@
+[
+ { 
+   "id": 1,
+   "Series": "I-MIC"		
+ },
+ { 
+   "id": 2,
+   "Series": "I-MIO"   		
+ },
+ { 
+   "id": 3,
+   "Series": "I-MIP"		
+ }
+]
