@@ -1,0 +1,88 @@
+<div style="display: flex; justify-content: space-between">
+  <nz-breadcrumb nzSeparator=">" style="margin-bottom: 20px">
+    <nz-breadcrumb-item
+      ><a routerLink="/debitor"
+        ><i nz-icon nzType="home" nzTheme="outline"></i></a
+    ></nz-breadcrumb-item>
+    <nz-breadcrumb-item
+      ><a routerLink="/cancel-policy">Xitam olunacaq SŞ</a></nz-breadcrumb-item
+    >
+    <nz-breadcrumb-item>Xitam taskları</nz-breadcrumb-item>
+  </nz-breadcrumb>
+  <div></div>
+</div>
+<ng-container *ngIf="!(loading$ | async)">
+  <ng-container *ngIf="tasks$ | async as taskData">
+    <nz-table #taskTable [nzData]="taskData" [nzFrontPagination]="false">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Siğorta növü</th>
+          <th>Task nömrəsi</th>
+          <th>Task ID</th>
+          <th>Task statusu</th>
+          <th>Task tarixi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-template
+          ngFor
+          let-nestedData
+          [ngForOf]="taskTable.data"
+          let
+          i="index"
+        >
+          <tr>
+            <td [(nzExpand)]="nestedData.expand"></td>
+            <td>{{ nestedData.insureTypeId }}</td>
+            <td>{{ nestedData.taskNumber }}</td>
+            <td>{{ nestedData.taskId }}</td>
+            <td>{{ nestedData.taskStatus }}</td>
+            <td>{{ nestedData.taskDate | date: "dd.MM.yyyy" }}</td>
+          </tr>
+          <tr [nzExpand]="nestedData.expand">
+            <nz-table
+              #innerTable
+              [nzData]="nestedData.events"
+              nzSize="middle"
+              [nzShowPagination]="false"
+            >
+              <thead>
+                <tr>
+                  <th>Hadisənin tipi</th>
+                  <th>Detallı</th>
+                  <th>Hadisənin tarixi</th>
+                  <th>Cavab tarixi</th>
+                  <th>Hadisəyə cavab</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let innerData of innerTable.data; let i = index">
+                  <td>{{ innerData.eventType }}</td>
+                  <td>{{ innerData.eventDescription }}</td>
+                  <td>{{ innerData.eventDate | date: "dd.MM.yyyy" }}</td>
+                  <td>
+                    {{ innerData.eventResponseDate | date: "dd.MM.yyyy" }}
+                  </td>
+                  <td>{{ innerData.eventResponse }}</td>
+                </tr>
+              </tbody>
+            </nz-table>
+          </tr></ng-template
+        >
+      </tbody>
+    </nz-table>
+    <nz-pagination
+      [nzPageIndex]="currentPage$ | async"
+      [nzTotal]="count$ | async"
+      (nzPageIndexChange)="pageChange($event)"
+      (nzPageSizeChange)="pageSizeChange($event)"
+      [nzPageSize]="(params$ | async)!.limit"
+      nzShowQuickJumper
+      nzShowSizeChanger
+      *ngIf="!(loading$ | async)"
+    ></nz-pagination>
+  </ng-container>
+</ng-container>
+
+<nz-skeleton *ngIf="loading$ | async" [nzActive]="true"></nz-skeleton>

@@ -1,0 +1,326 @@
+<nz-table
+  #rowSelectionTable
+  [nzShowPagination]="false"
+  [nzFrontPagination]="false"
+  nzShowSizeChanger
+  [nzData]="listOfData"
+  (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
+>
+  <thead>
+    <tr>
+      <th
+        [nzChecked]="checked"
+        [nzIndeterminate]="indeterminate"
+        (nzCheckedChange)="onAllChecked($event)"
+      ></th>
+      <th nzCustomFilter>
+        {{ columns.insuredName.displayName }}
+        <nz-filter-trigger
+          [(nzVisible)]="columns.insuredName.isSearchVisible"
+          [nzActive]="columns.insuredName.searchValue.length > 0"
+          [nzDropdownMenu]="insuredName"
+        >
+          <i nz-icon nzType="search"></i>
+        </nz-filter-trigger>
+      </th>
+      <th nzCustomFilter>
+        {{ columns.communicationTypeName.displayName }}
+        <nz-filter-trigger
+          [(nzVisible)]="columns.communicationTypeId.isSearchVisible"
+          [nzActive]="columns.communicationTypeId.searchValue.length > 0"
+          [nzDropdownMenu]="communicationTypeId"
+        >
+          <i nz-icon nzType="search"></i>
+        </nz-filter-trigger>
+      </th>
+      <th nzCustomFilter>
+        {{ columns.address.displayName }}
+        <!--        <nz-filter-trigger-->
+        <!--          [(nzVisible)]="columns.address.isSearchVisible"-->
+        <!--          [nzActive]="columns.address.searchValue.length > 0"-->
+        <!--          [nzDropdownMenu]="address"-->
+        <!--        >-->
+        <!--          <i nz-icon nzType="search"></i>-->
+        <!--        </nz-filter-trigger>-->
+      </th>
+      <th nzCustomFilter>
+        {{ columns.notificationDate.displayName }}
+        <nz-filter-trigger
+          [(nzVisible)]="columns.notificationDate.isSearchVisible"
+          [nzActive]="columns.notificationDate.searchValue.length > 0"
+          [nzDropdownMenu]="notificationDate"
+        >
+          <i nz-icon nzType="search"></i>
+        </nz-filter-trigger>
+      </th>
+      <th nzCustomFilter>
+        {{ columns.message.displayName }}
+      </th>
+      <th nzCustomFilter>
+        {{ columns.policySeries.displayName }}
+        <nz-filter-trigger
+          [(nzVisible)]="columns.policySeries.isSearchVisible"
+          [nzActive]="columns.policySeries.searchValue.length > 0"
+          [nzDropdownMenu]="policySeries"
+        >
+          <i nz-icon nzType="search"></i>
+        </nz-filter-trigger>
+      </th>
+      <th nzCustomFilter>
+        {{ columns.policyNumber.displayName }}
+        <nz-filter-trigger
+          [(nzVisible)]="columns.policyNumber.isSearchVisible"
+          [nzActive]="columns.policyNumber.searchValue.length > 0"
+          [nzDropdownMenu]="policyNumber"
+        >
+          <i nz-icon nzType="search"></i>
+        </nz-filter-trigger>
+      </th>
+      <th nzCustomFilter>
+        {{ columns.policyDate.displayName }}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of rowSelectionTable.data">
+      <td
+        [nzChecked]="setOfCheckedId.has(data.id)"
+        (nzCheckedChange)="onItemChecked(data.id, $event)"
+      ></td>
+      <td>{{ data.insuredName }}</td>
+      <td>{{ data.communicationTypeName }}</td>
+      <td>{{ data.address }}</td>
+      <td>{{ data.notificationDate | date: "dd.MM.yyyy" }}</td>
+      <td>{{ data.message }}</td>
+      <td>{{ data.policySeries }}</td>
+      <td>{{ data.policyNumber }}</td>
+      <td>{{ data.policyDate | date: "dd.MM.yyyy" }}</td>
+    </tr>
+  </tbody>
+</nz-table>
+<nz-pagination
+  [nzPageIndex]="currentPage"
+  [nzTotal]="count"
+  (nzPageIndexChange)="onPageChange($event)"
+  (nzPageSizeChange)="onPageSizeChange($event)"
+  nzShowQuickJumper
+  nzShowSizeChanger
+  style="margin-top: 20px"
+></nz-pagination>
+<nz-dropdown-menu #insuredName="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <form (submit)="search('insuredName')" class="search-box">
+      <input
+        type="text"
+        nz-input
+        placeholder="Search name"
+        [(ngModel)]="columns.insuredName.searchValue"
+        [name]="columns.insuredName.name"
+      />
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="resetFilter('insuredName')">
+        Reset
+      </button>
+    </form>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #communicationTypeId="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <nz-select
+        nzShowSearch
+        [(ngModel)]="columns.communicationTypeId.searchValue"
+        [nzShowArrow]="true"
+        (ngModelChange)="search('communicationTypeId')"
+      >
+        <nz-option
+          *ngFor="let b of communicationTypes"
+          [nzLabel]="b.name"
+          [nzValue]="b.id"
+        ></nz-option>
+      </nz-select>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="search('communicationTypeId')"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button
+        nz-button
+        nzSize="small"
+        (click)="resetFilter('communicationTypeId')"
+      >
+        Reset
+      </button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #notificationDate="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <form (submit)="search('notificationDate')" class="search-box">
+      <nz-range-picker
+        [(ngModel)]="columns.notificationDate.searchValue"
+        (ngModelChange)="onDateFilter($event, columns.notificationDate.name)"
+        [name]="columns.notificationDate.name"
+      ></nz-range-picker>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button
+        nz-button
+        nzSize="small"
+        (click)="resetFilter('notificationDate')"
+      >
+        Reset
+      </button>
+    </form>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #message="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <form (submit)="search('message')" class="search-box">
+      <input
+        type="text"
+        nz-input
+        placeholder="Search name"
+        [(ngModel)]="columns.message.searchValue"
+        [name]="columns.message.name"
+      />
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="resetFilter('message')">
+        Reset
+      </button>
+    </form>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #address="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <form (submit)="search('address')" class="search-box">
+      <input
+        type="text"
+        nz-input
+        placeholder="Search address"
+        [(ngModel)]="columns.address.searchValue"
+        [name]="columns.address.name"
+      />
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="resetFilter('address')">
+        Reset
+      </button>
+    </form>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #policySeries="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <nz-select
+        nzShowSearch
+        nzPlaceHolder="SŞ axtar"
+        [(ngModel)]="columns.policySeries.searchValue"
+        [nzShowArrow]="true"
+        (ngModelChange)="search('policySeries')"
+      >
+        <nz-option
+          *ngFor="let b of policySeries$ | async"
+          [nzLabel]="b.code"
+          [nzValue]="b.code"
+        ></nz-option>
+      </nz-select>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="search('policySeries')"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="resetFilter('policySeries')">
+        Reset
+      </button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #policyNumber="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <form (submit)="search('policyNumber')" class="search-box">
+      <input
+        type="text"
+        nz-input
+        placeholder="Search name"
+        [(ngModel)]="columns.policyNumber.searchValue"
+        [name]="columns.policyNumber.name"
+      />
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="resetFilter('policyNumber')">
+        Reset
+      </button>
+    </form>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #policyDate="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <form (submit)="search('policyDate')" class="search-box">
+      <nz-range-picker
+        [(ngModel)]="columns.policyDate.searchValue"
+        [name]="columns.policyDate.name"
+        (ngModelChange)="onDateFilter($event, columns.policyDate.name)"
+      ></nz-range-picker>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="resetFilter('policyDate')">
+        Reset
+      </button>
+    </form>
+  </div>
+</nz-dropdown-menu>

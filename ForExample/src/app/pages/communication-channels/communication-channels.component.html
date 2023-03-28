@@ -1,0 +1,109 @@
+<ng-container *ngIf="!(loading$ | async)">
+  <ng-container *ngIf="notificationsHistory$ | async as data">
+    <div class="flex-wide">
+      <nz-breadcrumb nzSeparator=">" style="margin-bottom: 20px">
+        <nz-breadcrumb-item
+          ><a routerLink="/debitor"
+            ><i nz-icon nzType="home" nzTheme="outline"></i></a
+        ></nz-breadcrumb-item>
+        <nz-breadcrumb-item>Kommunikasiya</nz-breadcrumb-item>
+      </nz-breadcrumb>
+
+      <div
+        style="
+          display: flex;
+          justify-content: flex-end;
+          margin-bottom: 10px;
+          height: 32px;
+        "
+      >
+        <ng-container *rbac="[rolesList.NOTIFICATIONHISTORY_ENVELOPE_GET]">
+          <button
+            *ngIf="checkedItems.length"
+            nz-button
+            nzType="primary"
+            (click)="toggleSendMessageModalVisible()"
+          >
+            Məktubları hazırla
+          </button>
+        </ng-container>
+        <a routerLink="settings" nz-button style="margin: 0 20px"
+          >Kommunikasiya ayarları</a
+        >
+        <ng-container *ngIf="downloadReport() | async as reportLink">
+          <app-excell-download
+            [reportLink]="reportLink"
+            *rbac="[rolesList.NOTIFICATIONHISTORY_REPORT_GET]"
+          ></app-excell-download>
+        </ng-container>
+      </div>
+    </div>
+    <app-notif-table
+      [listOfData]="data"
+      [count]="(count$ | async)!"
+      [currentPage]="(currentPage$ | async)!"
+      [columns]="columns"
+      [communicationTypes]="communicationTypes$ | async"
+      (checkedItems)="itemsChecked($event)"
+      (searchKey)="search($event)"
+      (resetKey)="resetFilter($event)"
+      (pageChange)="pageChange($event)"
+      (pageSizeChange)="pageSizeChange($event)"
+      [pageSize]="(params$ | async)!.limit"
+    ></app-notif-table>
+  </ng-container>
+</ng-container>
+<nz-modal
+  [(nzVisible)]="isSendMessageModalVisible"
+  (nzOnCancel)="toggleSendMessageModalVisible()"
+  (nzOnOk)="sendMessage()"
+  [nzOkLoading]="isSendMessageOkLoading"
+  nzClosable="false"
+  nzWidth="800px"
+>
+  <ng-container *nzModalContent>
+    <nz-table
+      #middleTable
+      nzSize="middle"
+      [nzData]="checkedItems"
+      nzShowPagination="false"
+    >
+      <thead>
+        <tr>
+          <th>Siğortalının adı</th>
+          <th>Kommunikasiya tipinin adı</th>
+          <th>SŞ tarixi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of middleTable.data">
+          <td>{{ data.insuredName }}</td>
+          <td>{{ data.communicationTypeName }}</td>
+          <td>{{ data.policyDate | date: "dd.MM.yyyy" }}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+    <p style="margin-top: 20px">
+      Məktub Nömrəsi
+      <input nz-input [(ngModel)]="envelopeNumber" type="number" />
+    </p>
+
+    <ng-container *ngIf="messageTypes$ | async as messageTypesList">
+      <nz-radio-group
+        [(ngModel)]="selectedMessageType"
+        nzButtonStyle="solid"
+        [nzSize]="'large'"
+        style="display: flex; width: 100%; margin-top: 20px"
+      >
+        <label
+          style="flex-grow: 1; text-align: center"
+          nz-radio-button
+          [nzValue]="msgType.id"
+          *ngFor="let msgType of messageTypesList"
+          >{{ msgType.name }}</label
+        >
+      </nz-radio-group>
+    </ng-container>
+  </ng-container></nz-modal
+>
+<nz-skeleton *ngIf="loading$ | async" [nzActive]="true"></nz-skeleton>

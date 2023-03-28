@@ -1,0 +1,402 @@
+<div class="flex-wide" style="margin-bottom: 20px">
+  <nz-breadcrumb nzSeparator=">">
+    <nz-breadcrumb-item
+      ><a routerLink="/debitor"
+        ><i nz-icon nzType="home" nzTheme="outline"></i></a
+    ></nz-breadcrumb-item>
+    <nz-breadcrumb-item
+      ><a routerLink="/communication-channels"
+        >Kommunikasiya</a
+      ></nz-breadcrumb-item
+    >
+    <nz-breadcrumb-item>Ayarlar</nz-breadcrumb-item>
+  </nz-breadcrumb>
+  <button
+    nz-button
+    nzType="primary"
+    (click)="isAddVisible = true"
+    *rbac="[rolesList.COMMUNICATIONSETTINGS_POST]"
+  >
+    Əlavə et
+  </button>
+</div>
+<ng-container *ngIf="!(loading$ | async)">
+  <ng-container *ngIf="communicationSettings$ | async as data">
+    <nz-table #nzTable [nzData]="data" [nzFrontPagination]="false">
+      <thead>
+        <tr>
+          <ng-container *ngFor="let col of columns | keyvalue: originalOrder">
+            <th [nzCustomFilter]="!col.value.hasNotFilter">
+              {{ col.value.displayName }}
+              <nz-filter-trigger
+                [(nzVisible)]="col.value.isSearchVisible"
+                [nzActive]="col.value.searchValue.length > 0"
+                [nzDropdownMenu]="filter"
+              >
+                <i nz-icon nzType="search"></i>
+              </nz-filter-trigger>
+              <nz-dropdown-menu #filter="nzDropdownMenu">
+                <div class="ant-table-filter-dropdown">
+                  <form (submit)="search(col.value.name)" class="search-box">
+                    <input
+                      *ngIf="col.value.isText"
+                      type="text"
+                      nz-input
+                      placeholder="Search name"
+                      [(ngModel)]="col.value.searchValue"
+                      [name]="col.value.name"
+                    />
+
+                    <div class="min-max" *ngIf="col.value.isRange">
+                      <label
+                        >Min
+                        <input
+                          type="number"
+                          nz-input
+                          placeholder="Min"
+                          [(ngModel)]="col.value.min"
+                          [name]="col.value.name + 'min'"
+                      /></label>
+
+                      <label>
+                        Max
+                        <input
+                          type="number"
+                          nz-input
+                          placeholder="Max"
+                          [(ngModel)]="col.value.max"
+                          [name]="col.value.name + 'max'"
+                        />
+                      </label>
+                    </div>
+                    <nz-select
+                      nzShowSearch
+                      [(ngModel)]="col.value.searchValue"
+                      [name]="col.value.name"
+                      [nzShowArrow]="true"
+                      *ngIf="col.value.name === 'branchCode'"
+                      (ngModelChange)="search(col.value.name)"
+                    >
+                      <nz-option
+                        *ngFor="let b of branches$ | async"
+                        [nzLabel]="b.branchName"
+                        [nzValue]="b.branchCode"
+                      ></nz-option>
+                    </nz-select>
+                    <nz-select
+                      nzShowSearch
+                      [(ngModel)]="col.value.searchValue"
+                      [name]="col.value.name"
+                      [nzShowArrow]="true"
+                      *ngIf="col.value.name === 'policySeries'"
+                      (ngModelChange)="search(col.value.name)"
+                    >
+                      <nz-option
+                        *ngFor="let b of policySeries$ | async"
+                        [nzLabel]="b.code"
+                        [nzValue]="b.code"
+                      ></nz-option>
+                    </nz-select>
+                    <nz-select
+                      nzShowSearch
+                      [(ngModel)]="col.value.searchValue"
+                      [nzShowArrow]="true"
+                      *ngIf="col.value.name === 'communicationTypeId'"
+                      (ngModelChange)="search(col.value.name)"
+                      [name]="col.value.name"
+                    >
+                      <nz-option
+                        *ngFor="let b of communicationTypes$ | async"
+                        [nzLabel]="b.name"
+                        [nzValue]="b.id"
+                      ></nz-option>
+                    </nz-select>
+                    <nz-select
+                      nzShowSearch
+                      [(ngModel)]="col.value.searchValue"
+                      [nzShowArrow]="true"
+                      *ngIf="col.value.name === 'messageTypeId'"
+                      (ngModelChange)="search(col.value.name)"
+                      [name]="col.value.name"
+                    >
+                      <nz-option
+                        *ngFor="let b of messageTypes$ | async"
+                        [nzLabel]="b.name"
+                        [nzValue]="b.id"
+                      ></nz-option>
+                    </nz-select>
+
+                    <button
+                      nz-button
+                      nzSize="small"
+                      nzType="primary"
+                      (click)="search(col.value.name)"
+                      class="search-button"
+                    >
+                      Search
+                    </button>
+                    <button
+                      nz-button
+                      nzSize="small"
+                      (click)="resetFilter(col.value.name)"
+                    >
+                      Reset
+                    </button>
+                  </form>
+                </div>
+              </nz-dropdown-menu>
+            </th>
+          </ng-container>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of nzTable.data">
+          <td>{{ data.policySeries }}</td>
+          <td>{{ data.branchName }}</td>
+          <td>{{ data.communicationTypeName }}</td>
+          <td>{{ data.dayCount }}</td>
+          <td>{{ data.communicationText }}</td>
+          <td>{{ data.messageTypeName }}</td>
+          <td>
+            <div class="flex-wide">
+              <button
+                nz-button
+                nzType="primary"
+                nzShape="circle"
+                (click)="showEdit(data)"
+                *rbac="[rolesList.COMMUNICATIONSETTINGS_PUT]"
+              >
+                <span nz-icon nzType="edit"></span>
+              </button>
+              <button
+                nz-button
+                nzDanger
+                nzShape="circle"
+                (click)="submitDelete(data.id)"
+                style="margin-left: 5px"
+                *rbac="[rolesList.COMMUNICATIONSETTINGS_DELETE]"
+              >
+                <span nz-icon nzType="delete"></span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+    <nz-pagination
+      [nzPageIndex]="currentPage$ | async"
+      [nzTotal]="count$ | async"
+      (nzPageIndexChange)="pageChange($event)"
+      (nzPageSizeChange)="pageSizeChange($event)"
+      [nzPageSize]="(params$ | async)!.limit"
+      nzShowQuickJumper
+      nzShowSizeChanger
+    ></nz-pagination>
+  </ng-container>
+</ng-container>
+<nz-modal
+  [(nzVisible)]="isEditVisible"
+  nzTitle="Redaktə"
+  (nzOnCancel)="closeModals()"
+  (nzOnOk)="submitEdit()"
+  [nzOkLoading]="isOkLoading"
+  [nzOkDisabled]="!editSettingsForm?.valid"
+>
+  <ng-container *nzModalContent>
+    <form (ngSubmit)="submitAdd()" #editSettingsForm="ngForm" novalidate>
+      <p>
+        Sığorta növü
+        <nz-select
+          [(ngModel)]="selectedSettingsItem.policySeries"
+          [nzShowArrow]="true"
+          style="width: 100%"
+          name="policySeries"
+          nzShowSearch
+          required
+        >
+          <nz-option
+            *ngFor="let b of policySeries$ | async"
+            [nzLabel]="b.code"
+            [nzValue]="b.code"
+          ></nz-option>
+        </nz-select>
+      </p>
+      <p>
+        Ofis
+        <nz-select
+          nzShowSearch
+          [(ngModel)]="selectedSettingsItem.branchCode"
+          [nzShowArrow]="true"
+          style="width: 100%"
+          name="branchCode"
+          required
+        >
+          <nz-option
+            *ngFor="let b of branches$ | async"
+            [nzLabel]="b.branchName"
+            [nzValue]="b.branchCode"
+          ></nz-option>
+        </nz-select>
+      </p>
+      <p>
+        Məlumatlandırma növü
+        <nz-select
+          [(ngModel)]="selectedSettingsItem.communicationTypeId"
+          [nzShowArrow]="true"
+          style="width: 100%"
+          name="communicationTypeId"
+          required
+        >
+          <nz-option
+            *ngFor="let b of communicationTypes$ | async"
+            [nzLabel]="b.name"
+            [nzValue]="b.id"
+          ></nz-option>
+        </nz-select>
+      </p>
+      <p>
+        Gün sayı
+        <input
+          type="text"
+          nz-input
+          required
+          name="dayCount"
+          [(ngModel)]="selectedSettingsItem.dayCount"
+        />
+      </p>
+      <p>
+        Mətnin məzmunu
+        <textarea
+          rows="4"
+          nz-input
+          [(ngModel)]="selectedSettingsItem.communicationText"
+          name="communicationText"
+          required
+        ></textarea>
+      </p>
+      <p>
+        Mətnin növü
+        <nz-select
+          nzShowSearch
+          [(ngModel)]="selectedSettingsItem.communicationTypeId"
+          [nzShowArrow]="true"
+          style="width: 100%"
+          name="messageTypeId"
+          required
+        >
+          <nz-option
+            *ngFor="let b of messageTypes$ | async"
+            [nzLabel]="b.name"
+            [nzValue]="b.id"
+          ></nz-option>
+        </nz-select>
+      </p>
+    </form>
+  </ng-container>
+</nz-modal>
+
+<nz-modal
+  [(nzVisible)]="isAddVisible"
+  nzTitle="Əlavə et"
+  (nzOnCancel)="closeModals()"
+  (nzOnOk)="submitAdd()"
+  [nzOkLoading]="isOkLoading"
+  [nzOkDisabled]="!addSettingsForm?.valid"
+>
+  <ng-container *nzModalContent>
+    <form (ngSubmit)="submitAdd()" #addSettingsForm="ngForm" novalidate>
+      <p>
+        Sığorta növü
+        <nz-select
+          [(ngModel)]="selectedSettingsItem.policySeries"
+          nzShowSearch
+          name="policySeries"
+          [nzShowArrow]="true"
+          required
+          style="width: 100%"
+          nzMode="multiple"
+        >
+          <nz-option
+            *ngFor="let b of policySeries$ | async"
+            [nzLabel]="b.code"
+            [nzValue]="b.code"
+          ></nz-option>
+        </nz-select>
+      </p>
+      <p>
+        Ofis
+        <nz-select
+          [(ngModel)]="selectedSettingsItem.branchCode"
+          nzShowSearch
+          name="branchCode"
+          [nzShowArrow]="true"
+          style="width: 100%"
+          nzMode="multiple"
+          required
+        >
+          <nz-option
+            *ngFor="let b of branches$ | async"
+            [nzLabel]="b.branchName"
+            [nzValue]="b.branchCode"
+          ></nz-option>
+        </nz-select>
+      </p>
+      <p>
+        Məlumatlandırma növü
+        <nz-select
+          [(ngModel)]="selectedSettingsItem.communicationTypeId"
+          name="communicationTypeId"
+          [nzShowArrow]="true"
+          style="width: 100%"
+          nzMode="multiple"
+          required
+        >
+          <nz-option
+            *ngFor="let b of communicationTypes$ | async"
+            [nzLabel]="b.name"
+            [nzValue]="b.id"
+          ></nz-option>
+        </nz-select>
+      </p>
+      <p>
+        Gün sayı
+        <input
+          nz-input
+          type="number"
+          required
+          [(ngModel)]="selectedSettingsItem.dayCount"
+          name="dayCount"
+        />
+      </p>
+      <p>
+        Mətnin məzmunu
+        <textarea
+          rows="4"
+          nz-input
+          [(ngModel)]="selectedSettingsItem.communicationText"
+          name="communicationText"
+          required
+        ></textarea>
+      </p>
+      <p>
+        Mətnin növü
+        <nz-select
+          [(ngModel)]="selectedSettingsItem.messageTypeId"
+          name="messageTypeId"
+          [nzShowArrow]="true"
+          style="width: 100%"
+          nzMode="multiple"
+          required
+        >
+          <nz-option
+            *ngFor="let b of messageTypes$ | async"
+            [nzLabel]="b.name"
+            [nzValue]="b.id"
+          ></nz-option>
+        </nz-select>
+      </p>
+    </form>
+  </ng-container>
+</nz-modal>
+<nz-skeleton *ngIf="loading$ | async" [nzActive]="true"></nz-skeleton>

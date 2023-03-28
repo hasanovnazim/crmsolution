@@ -1,0 +1,52 @@
+/* You can add global styles to this file, and also import other style files */
+a {
+  cursor: pointer;
+}
+.ant-table-content{ overflow: auto; }
+.ant-tabs-tab-btn{
+  text-transform: capitalize;
+}
+.ant-pagination{
+  justify-items: flex-end;
+}
+nz-select {
+  width: 200px;
+}
+.date-popup {
+  cursor: pointer;
+}
+.search-box {
+  padding: 8px;
+  input {
+    width: 188px;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .min-max {
+    display: flex;
+    width: 100%;
+    label:first-child {
+      margin-right: 5px;
+    }
+  }
+
+  button {
+    width: 90px;
+  }
+
+  .search-button {
+    margin-right: 8px;
+  }
+  .btns{
+    display: flex;
+    width: 100%;
+  }
+}
+.flex-wide {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+input.ng-touched.ng-dirty.ng-invalid {
+  border-color: #f5222d;
+}

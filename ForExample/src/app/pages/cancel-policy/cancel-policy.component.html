@@ -1,0 +1,469 @@
+<div style="display: flex; justify-content: space-between">
+  <nz-breadcrumb nzSeparator=">" style="margin-bottom: 20px">
+    <nz-breadcrumb-item
+      ><a routerLink="/debitor"
+        ><i nz-icon nzType="home" nzTheme="outline"></i></a
+    ></nz-breadcrumb-item>
+    <nz-breadcrumb-item>Xitam olunacaq SŞ</nz-breadcrumb-item>
+  </nz-breadcrumb>
+  <div>
+    <ng-container *ngIf="downloadReport() | async as reportLink">
+      <app-excell-download
+        [reportLink]="reportLink"
+        *rbac="[rolesList.CANCELLATION_REPORT_GET]"
+      ></app-excell-download>
+    </ng-container>
+  </div>
+</div>
+<ng-container *ngIf="!(loading$ | async)">
+  <ng-container *ngIf="cancellations$ | async as data">
+    <nz-table #nzTable [nzData]="data" [nzFrontPagination]="false">
+      <thead>
+        <tr>
+          <th nzCustomFilter>
+            {{ columns.insuredName.displayName }}
+            <nz-filter-trigger
+              [(nzVisible)]="columns.insuredName.isSearchVisible"
+              [nzActive]="columns.insuredName.searchValue.length > 0"
+              [nzDropdownMenu]="insuredName"
+            >
+              <i nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+          <th nzCustomFilter>
+            {{ columns.insuredType.displayName }}
+            <nz-filter-trigger
+              [(nzVisible)]="columns.insuredType.isSearchVisible"
+              [nzActive]="columns.insuredType.searchValue.length > 0"
+              [nzDropdownMenu]="insuredType"
+            >
+              <i nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+          <th nzCustomFilter>
+            {{ columns.policyNumber.displayName }}
+            <nz-filter-trigger
+              [(nzVisible)]="columns.policyNumber.isSearchVisible"
+              [nzActive]="columns.policyNumber.searchValue.length > 0"
+              [nzDropdownMenu]="policyNumber"
+            >
+              <i nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+          <th nzCustomFilter>
+            {{ columns.policySeries.displayName }}
+            <nz-filter-trigger
+              [(nzVisible)]="columns.policySeries.isSearchVisible"
+              [nzActive]="columns.policySeries.searchValue.length > 0"
+              [nzDropdownMenu]="policySeries"
+            >
+              <i nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+          <th nzCustomFilter>
+            {{ columns.policyDate.displayName }}
+            <nz-filter-trigger
+              [(nzVisible)]="columns.policyDate.isSearchVisible"
+              [nzActive]="columns.policyDate.searchValue.length > 0"
+              [nzDropdownMenu]="policyDate"
+            >
+              <i nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+          <th nzCustomFilter>
+            {{ columns.debt.displayName }}
+            <nz-filter-trigger
+              [(nzVisible)]="columns.debt.isSearchVisible"
+              [nzActive]="columns.debt.searchValue.length > 0"
+              [nzDropdownMenu]="debt"
+            >
+              <i nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+          <th nzCustomFilter>
+            {{ columns.debitorDate.displayName }}
+            <nz-filter-trigger
+              [(nzVisible)]="columns.debitorDate.isSearchVisible"
+              [nzActive]="columns.debitorDate.searchValue.length > 0"
+              [nzDropdownMenu]="debitorDate"
+            >
+              <i nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+          <th nzCustomFilter>
+            {{ columns.approveStatusName.displayName }}
+            <nz-filter-trigger
+              [(nzVisible)]="columns.approveStatusName.isSearchVisible"
+              [nzActive]="columns.approveStatus.searchValue.length > 0"
+              [nzDropdownMenu]="approveStatus"
+            >
+              <i nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+          <th>Task</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of nzTable.data">
+          <td>
+            <a
+              [routerLink]="[
+                '/debitor',
+                this.insuredTypesEnum[data.insuredType],
+                data.insureTypeId,
+                data.insuredId
+              ]"
+              >{{ data.insuredName }}</a
+            >
+          </td>
+          <td>{{ getInsuredType(data.insuredType) }}</td>
+          <td>{{ data.policyNumber }}</td>
+          <td>{{ data.policySeries }}</td>
+          <td>
+            {{ data.policyDate | date: "dd.MM.yyyy" }}
+          </td>
+          <td>{{ data.debt }}</td>
+          <td>
+            <a
+              (click)="showDateModal(data)"
+              *rbac="
+                [rolesList.CANCELLATION_INCREASE_POST];
+                replacement: (data.debitorDate | date: 'dd.MM.yyyy')!
+              "
+              >{{ data.debitorDate | date: "dd.MM.yyyy" }}</a
+            >
+          </td>
+          <td>
+            <button
+              nz-button
+              (click)="showApprove(data.id)"
+              *rbac="
+                [rolesList.CANCELLATION_APPROVE_POST];
+                replacement: data.approveStatusName
+              "
+              [disabled]="data.approveStatus === 2"
+            >
+              {{ data.approveStatusName }}
+            </button>
+          </td>
+          <td>
+            <a
+              *ngIf="data.hasTask"
+              [routerLink]="['/tasks']"
+              [queryParams]="{ taskId: data.taskId }"
+              >Task</a
+            >
+            <a
+              *ngIf="!data.hasTask && data.approveStatus !== 1"
+              nz-button
+              nzType="primary"
+              (click)="openCreateModal(data)"
+              >Task yarat</a
+            >
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+    <nz-pagination
+      [nzPageIndex]="currentPage$ | async"
+      [nzTotal]="count$ | async"
+      (nzPageIndexChange)="pageChange($event)"
+      (nzPageSizeChange)="pageSizeChange($event)"
+      [nzPageSize]="(params$ | async)!.limit"
+      nzShowQuickJumper
+      nzShowSizeChanger
+      *ngIf="!(loading$ | async)"
+    ></nz-pagination>
+  </ng-container>
+</ng-container>
+<nz-dropdown-menu #insuredName="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <form (submit)="search('insuredName')" class="search-box">
+      <input
+        type="text"
+        nz-input
+        placeholder="Search name"
+        [(ngModel)]="columns.insuredName.searchValue"
+        [name]="columns.insuredName.name"
+      />
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="resetFilter('insuredName')">
+        Reset
+      </button>
+    </form>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #insuredType="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <nz-select
+        nzShowSearch
+        [nzPlaceHolder]="columns.insuredType.displayName"
+        [(ngModel)]="columns.insuredType.searchValue"
+        [nzShowArrow]="true"
+        (ngModelChange)="search('insuredType')"
+      >
+        <nz-option
+          *ngFor="let b of insuredTypes$ | async"
+          [nzLabel]="b.description"
+          [nzValue]="b.type"
+        ></nz-option>
+      </nz-select>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="search('insuredType')"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="resetFilter('insuredType')">
+        Reset
+      </button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #policySeries="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <nz-select
+        nzShowSearch
+        [nzPlaceHolder]="columns.policySeries.displayName"
+        [(ngModel)]="columns.policySeries.searchValue"
+        [nzShowArrow]="true"
+        (ngModelChange)="search('policySeries')"
+      >
+        <nz-option
+          *ngFor="let b of policySeries$ | async"
+          [nzLabel]="b.code"
+          [nzValue]="b.code"
+        ></nz-option>
+      </nz-select>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="search('policySeries')"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="resetFilter('policySeries')">
+        Reset
+      </button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #policyNumber="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <form (submit)="search('policyNumber')" class="search-box">
+      <input
+        type="text"
+        nz-input
+        placeholder="Search name"
+        [(ngModel)]="columns.policyNumber.searchValue"
+        [name]="columns.policyNumber.name"
+      />
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="resetFilter('policyNumber')">
+        Reset
+      </button>
+    </form>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #policyDate="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <form (submit)="search('policyDate')" class="search-box">
+      <nz-range-picker
+        [(ngModel)]="columns.policyDate.searchValue"
+        [name]="columns.policyDate.name"
+        (ngModelChange)="onDateFilter($event, columns.policyDate.name)"
+      ></nz-range-picker>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="resetFilter('policyDate')">
+        Reset
+      </button>
+    </form>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #debitorDate="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <form (submit)="search('debitorDate')" class="search-box">
+      <nz-range-picker
+        [(ngModel)]="columns.debitorDate.searchValue"
+        [name]="columns.debitorDate.name"
+        (ngModelChange)="onDateFilter($event, columns.debitorDate.name)"
+      ></nz-range-picker>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="resetFilter('debitorDate')">
+        Reset
+      </button>
+    </form>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #approveStatus="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <nz-select
+        nzShowSearch
+        [nzPlaceHolder]="columns.approveStatus.displayName"
+        [(ngModel)]="columns.approveStatus.searchValue"
+        [nzShowArrow]="true"
+        (ngModelChange)="search('approveStatus')"
+      >
+        <nz-option
+          *ngFor="let b of smsStatusList$ | async"
+          [nzLabel]="b.name"
+          [nzValue]="b.id"
+        ></nz-option>
+      </nz-select>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="search('approveStatus')"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="resetFilter('approveStatus')">
+        Reset
+      </button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #debt="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <form (submit)="search('debt')" class="min-max">
+        <label
+          >Min
+          <input
+            type="text"
+            nz-input
+            placeholder="Min"
+            [(ngModel)]="columns.debt.min"
+            name="columns.debt.min"
+        /></label>
+
+        <label>
+          Max
+          <input
+            type="text"
+            nz-input
+            placeholder="Max"
+            [(ngModel)]="columns.debt.max"
+            name="columns.debt.max"
+          />
+        </label>
+      </form>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="resetFilter('debt')">
+        Reset
+      </button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-modal
+  [(nzVisible)]="isDateVisible"
+  (nzOnCancel)="handleDateCancel()"
+  (nzOnOk)="handleDateOk()"
+  [nzOkLoading]="isDateOkLoading"
+  nzTitle="Xitam tarixinin uzadılması"
+>
+  <div *nzModalContent>
+    <nz-date-picker
+      [(ngModel)]="selectedCancelDate"
+      [nzDisabledDate]="disabledDate"
+      style="margin-bottom: 20px"
+    ></nz-date-picker>
+    <textarea rows="4" nz-input [(ngModel)]="cancelMessage"></textarea>
+  </div>
+</nz-modal>
+<nz-skeleton *ngIf="loading$ | async" [nzActive]="true"></nz-skeleton>
+<nz-modal
+  [(nzVisible)]="isCreateTaskVisible"
+  (nzOnCancel)="handleCreateTaskCancel()"
+  (nzOnOk)="handleCreateTaskOk()"
+  [nzOkLoading]="isCreateTaskOkLoading"
+  nzTitle="Task yarat"
+>
+  <div *nzModalContent>
+    <p style="margin-bottom: 20px" *ngIf="selectedInsureTypeId">
+      Portfel
+      <nz-select
+        nzShowSearch
+        style="width: 100%"
+        [(ngModel)]="portfelId"
+        [nzShowArrow]="true"
+        (ngModelChange)="onPortfelChange()"
+      >
+        <nz-option
+          *ngFor="let b of portfels$ | async"
+          [nzLabel]="b.portfelName"
+          [nzValue]="b.portfelId"
+        ></nz-option>
+      </nz-select>
+    </p>
+    <p style="margin-bottom: 20px" *ngIf="portfelId">
+      Subject
+      <nz-select
+        nzShowSearch
+        style="width: 100%"
+        [(ngModel)]="subjectId"
+        [nzShowArrow]="true"
+      >
+        <nz-option
+          *ngFor="let b of subjects$ | async"
+          [nzLabel]="b.subjectName"
+          [nzValue]="b.subjectId"
+        ></nz-option>
+      </nz-select>
+    </p>
+  </div>
+</nz-modal>

@@ -1,0 +1,543 @@
+<div style="display: flex; justify-content: space-between">
+  <nz-breadcrumb nzSeparator=">" style="margin-bottom: 20px">
+    <nz-breadcrumb-item
+      ><a routerLink="/debitor"
+        ><i nz-icon nzType="home" nzTheme="outline"></i></a
+    ></nz-breadcrumb-item>
+    <nz-breadcrumb-item>Müştəri kontaktları</nz-breadcrumb-item>
+  </nz-breadcrumb>
+  <div>
+    <button
+      nz-button
+      nzType="default"
+      (click)="showAdd()"
+      style="margin-right: 10px"
+      *rbac="[rolesList.CONTACTS_POST]"
+    >
+      <span nz-icon nzType="plus"></span> Yeni müştəri
+    </button>
+    <ng-container *ngIf="downloadReport() | async as reportLink">
+      <app-excell-download
+        [reportLink]="reportLink"
+        *rbac="[rolesList.CONTACTS_REPORT_GET]"
+      ></app-excell-download>
+    </ng-container>
+  </div>
+</div>
+
+<ng-container *ngIf="!(loading$ | async)">
+  <ng-container *ngIf="customerContacts$ | async as data">
+    <nz-table #nzTable [nzData]="data" [nzFrontPagination]="false">
+      <thead>
+        <tr>
+          <th nzCustomFilter>
+            {{ columns.fullName.displayName }}
+            <nz-filter-trigger
+              [(nzVisible)]="columns.fullName.isSearchVisible"
+              [nzActive]="columns.fullName.searchValue.length > 0"
+              [nzDropdownMenu]="fullName"
+            >
+              <i nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+          <!--        <th nzCustomFilter>-->
+          <!--          {{ columns.clientId.displayName }}-->
+          <!--          <nz-filter-trigger-->
+          <!--            [(nzVisible)]="columns.clientId.isSearchVisible"-->
+          <!--            [nzActive]="columns.clientId.searchValue.length > 0"-->
+          <!--            [nzDropdownMenu]="clientId"-->
+          <!--          >-->
+          <!--            <i nz-icon nzType="search"></i>-->
+          <!--          </nz-filter-trigger>-->
+          <!--        </th>-->
+          <th nzCustomFilter>
+            {{ columns.email.displayName }}
+            <nz-filter-trigger
+              [(nzVisible)]="columns.email.isSearchVisible"
+              [nzActive]="columns.email.searchValue.length > 0"
+              [nzDropdownMenu]="email"
+            >
+              <i nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+          <th nzCustomFilter>
+            {{ columns.position.displayName }}
+          </th>
+          <th nzCustomFilter>
+            {{ columns.insuredType.displayName }}
+            <nz-filter-trigger
+              [(nzVisible)]="columns.insuredType.isSearchVisible"
+              [nzActive]="columns.insuredType.searchValue.length > 0"
+              [nzDropdownMenu]="insuredType"
+            >
+              <i nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+          <th nzCustomFilter>
+            {{ columns.policySeries.displayName }}
+            <nz-filter-trigger
+              [(nzVisible)]="columns.policySeries.isSearchVisible"
+              [nzActive]="columns.policySeries.searchValue.length > 0"
+              [nzDropdownMenu]="policySeries"
+            >
+              <i nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+          <th nzCustomFilter>
+            {{ columns.phone.displayName }}
+            <!--            <nz-filter-trigger-->
+            <!--              [(nzVisible)]="columns.phone.isSearchVisible"-->
+            <!--              [nzActive]="columns.phone.searchValue.length > 0"-->
+            <!--              [nzDropdownMenu]="phone"-->
+            <!--            >-->
+            <!--              <i nz-icon nzType="search"></i>-->
+            <!--            </nz-filter-trigger>-->
+          </th>
+          <th nzCustomFilter>
+            {{ columns.nameSurname.displayName }}
+            <nz-filter-trigger
+              [(nzVisible)]="columns.nameSurname.isSearchVisible"
+              [nzActive]="columns.nameSurname.searchValue.length > 0"
+              [nzDropdownMenu]="nameSurname"
+            >
+              <i nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of nzTable.data">
+          <td>
+            <a (click)="toggleCommunicationDetailsVisible(data)">{{
+              data.fullName
+            }}</a>
+          </td>
+          <!--        <td>{{ data.clientId }}</td>-->
+          <td>{{ data.email }}</td>
+          <td>{{ data.position }}</td>
+          <td>{{ data.insuredType }}</td>
+          <td>{{ data.policySeries }}</td>
+          <td>{{ data.phone }}</td>
+          <td>{{ data.nameSurname }}</td>
+          <td>
+            <button
+              nz-button
+              nzType="primary"
+              nzShape="circle"
+              (click)="showEdit(data)"
+              *rbac="[rolesList.CONTACTS_PUT]"
+            >
+              <span nz-icon nzType="edit"></span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+    <nz-pagination
+      [nzPageIndex]="currentPage$ | async"
+      [nzTotal]="count$ | async"
+      (nzPageIndexChange)="pageChange($event)"
+      (nzPageSizeChange)="pageSizeChange($event)"
+      [nzPageSize]="(params$ | async)!.limit"
+      nzShowQuickJumper
+      nzShowSizeChanger
+      *ngIf="!(loading$ | async)"
+    ></nz-pagination>
+    <nz-dropdown-menu #fullName="nzDropdownMenu">
+      <div class="ant-table-filter-dropdown">
+        <form (submit)="search('fullName')" class="search-box">
+          <input
+            type="text"
+            nz-input
+            placeholder="Search name"
+            [(ngModel)]="columns.fullName.searchValue"
+            [name]="columns.fullName.name"
+          />
+          <button
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            class="search-button"
+            type="submit"
+          >
+            Search
+          </button>
+          <button nz-button nzSize="small" (click)="resetFilter('fullName')">
+            Reset
+          </button>
+        </form>
+      </div>
+    </nz-dropdown-menu>
+    <nz-dropdown-menu #clientId="nzDropdownMenu">
+      <div class="ant-table-filter-dropdown">
+        <form (submit)="search('clientId')" class="search-box">
+          <input
+            type="text"
+            nz-input
+            placeholder="Search name"
+            [(ngModel)]="columns.clientId.searchValue"
+            [name]="columns.clientId.name"
+          />
+          <button
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            class="search-button"
+            type="submit"
+          >
+            Search
+          </button>
+          <button nz-button nzSize="small" (click)="resetFilter('clientId')">
+            Reset
+          </button>
+        </form>
+      </div>
+    </nz-dropdown-menu>
+    <nz-dropdown-menu #email="nzDropdownMenu">
+      <div class="ant-table-filter-dropdown">
+        <form (submit)="search('email')" class="search-box">
+          <input
+            type="text"
+            nz-input
+            placeholder="Search name"
+            [(ngModel)]="columns.email.searchValue"
+            [name]="columns.email.name"
+          />
+          <button
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            class="search-button"
+            type="submit"
+          >
+            Search
+          </button>
+          <button nz-button nzSize="small" (click)="resetFilter('email')">
+            Reset
+          </button>
+        </form>
+      </div>
+    </nz-dropdown-menu>
+    <nz-dropdown-menu #position="nzDropdownMenu">
+      <div class="ant-table-filter-dropdown">
+        <form (submit)="search('position')" class="search-box">
+          <input
+            type="text"
+            nz-input
+            placeholder="Search name"
+            [(ngModel)]="columns.position.searchValue"
+            [name]="columns.position.name"
+          />
+          <button
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            class="search-button"
+            type="submit"
+          >
+            Search
+          </button>
+          <button nz-button nzSize="small" (click)="resetFilter('position')">
+            Reset
+          </button>
+        </form>
+      </div>
+    </nz-dropdown-menu>
+    <nz-dropdown-menu #insuredType="nzDropdownMenu">
+      <div class="ant-table-filter-dropdown">
+        <div class="search-box">
+          <nz-select
+            nzShowSearch
+            [(ngModel)]="columns.insuredType.searchValue"
+            [nzShowArrow]="true"
+            (ngModelChange)="search('insuredType')"
+          >
+            <nz-option
+              *ngFor="let b of insuredTypes$ | async"
+              [nzLabel]="b.description"
+              [nzValue]="b.type"
+            ></nz-option>
+          </nz-select>
+          <button
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="search('insuredType')"
+            class="search-button"
+            type="submit"
+          >
+            Search
+          </button>
+          <button nz-button nzSize="small" (click)="resetFilter('insuredType')">
+            Reset
+          </button>
+        </div>
+      </div>
+    </nz-dropdown-menu>
+    <nz-dropdown-menu #policySeries="nzDropdownMenu">
+      <div class="ant-table-filter-dropdown">
+        <div class="search-box">
+          <nz-select
+            nzShowSearch
+            nzPlaceHolder="SŞ axtar"
+            [(ngModel)]="columns.policySeries.searchValue"
+            [nzShowArrow]="true"
+            (ngModelChange)="search('policySeries')"
+          >
+            <nz-option
+              *ngFor="let b of policySeries$ | async"
+              [nzLabel]="b.code"
+              [nzValue]="b.code"
+            ></nz-option>
+          </nz-select>
+          <button
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="search('policySeries')"
+            class="search-button"
+            type="submit"
+          >
+            Search
+          </button>
+          <button
+            nz-button
+            nzSize="small"
+            (click)="resetFilter('policySeries')"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </nz-dropdown-menu>
+    <nz-dropdown-menu #phone="nzDropdownMenu">
+      <div class="ant-table-filter-dropdown">
+        <form (submit)="search('phone')" class="search-box">
+          <input
+            type="text"
+            nz-input
+            placeholder="Search name"
+            [(ngModel)]="columns.phone.searchValue"
+            [name]="columns.phone.name"
+          />
+          <button
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            class="search-button"
+            type="submit"
+          >
+            Search
+          </button>
+          <button nz-button nzSize="small" (click)="resetFilter('phone')">
+            Reset
+          </button>
+        </form>
+      </div>
+    </nz-dropdown-menu>
+    <nz-dropdown-menu #nameSurname="nzDropdownMenu">
+      <div class="ant-table-filter-dropdown">
+        <form (submit)="search('nameSurname')" class="search-box">
+          <input
+            type="text"
+            nz-input
+            placeholder="Search name"
+            [(ngModel)]="columns.nameSurname.searchValue"
+            [name]="columns.nameSurname.name"
+          />
+          <button
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            class="search-button"
+            type="submit"
+          >
+            Search
+          </button>
+          <button nz-button nzSize="small" (click)="resetFilter('nameSurname')">
+            Reset
+          </button>
+        </form>
+      </div>
+    </nz-dropdown-menu>
+  </ng-container>
+</ng-container>
+<nz-modal
+  [(nzVisible)]="isEditVisible"
+  nzTitle="Məlumatların redaktəsi"
+  (nzOnCancel)="closeEdit()"
+  (nzOnOk)="submitEdit()"
+  [nzOkLoading]="isEditLoading"
+  [nzOkDisabled]="!editContactForm?.valid"
+>
+  <ng-container *nzModalContent>
+    <form (ngSubmit)="submitEdit()" #editContactForm="ngForm" novalidate>
+      <p>
+        Müştərinin adı, soyadı
+        <input
+          type="text"
+          nz-input
+          name="nameSurname"
+          required
+          [(ngModel)]="editedContact.nameSurname"
+        />
+      </p>
+      <p>
+        Sığorta seriyası
+        <nz-select
+          nzShowSearch
+          nzPlaceHolder="SŞ axtar"
+          name="policySeries"
+          style="width: 100%"
+          [(ngModel)]="editedContact.policySeries"
+          required
+          required
+          [nzShowArrow]="true"
+        >
+          <nz-option
+            *ngFor="let b of policySeries$ | async"
+            [nzLabel]="b.code"
+            [nzValue]="b.code"
+          ></nz-option>
+        </nz-select>
+      </p>
+      <p>
+        Müştərinin vəzifəsi
+        <input
+          type="text"
+          nz-input
+          name="position"
+          required
+          [(ngModel)]="editedContact.position"
+        />
+      </p>
+      <p>
+        Email
+        <input
+          type="text"
+          nz-input
+          name="email"
+          required
+          [(ngModel)]="editedContact.email"
+        />
+      </p>
+    </form>
+  </ng-container>
+</nz-modal>
+<nz-modal
+  [(nzVisible)]="isCommunicationDetailsVisible"
+  nzTitle="Sığortalı"
+  (nzOnCancel)="isCommunicationDetailsVisible = false"
+  [nzFooter]="modalFooter"
+>
+  <ng-container *nzModalContent>
+    <nz-card style="width: 100%" *ngFor="let comdet of communicationDetails">
+      <div class="com-details-item">
+        <span>Sığorta seriyası</span><span>{{ comdet.policySeries }}</span>
+      </div>
+      <div class="com-details-item">
+        <span>Ofis</span><span>{{ comdet.branchName }}</span>
+      </div>
+      <div class="com-details-item">
+        <span>Kommunikasiya növü</span
+        ><span>{{ comdet.communicationTypeName }}</span>
+      </div>
+      <div class="com-details-item">
+        <span>Gün sayı</span><span>{{ comdet.dayCount }}</span>
+      </div>
+      <div class="com-details-item">
+        <span>Mətn</span><span>{{ comdet.communicationText }}</span>
+      </div>
+    </nz-card>
+  </ng-container>
+
+  <ng-template #modalFooter> </ng-template
+></nz-modal>
+<nz-modal
+  [(nzVisible)]="isAddVisible"
+  nzTitle="Yeni müştəri əlavə et"
+  (nzOnCancel)="closeAdd()"
+  (nzOnOk)="submitAdd()"
+  [nzOkLoading]="isAddLoading"
+  [nzOkDisabled]="!addContactForm?.valid"
+>
+  <ng-container *nzModalContent>
+    <form (ngSubmit)="submitAdd()" #addContactForm="ngForm" novalidate>
+      <p>
+        Müştərinin adı, soyadı
+        <input
+          type="text"
+          nz-input
+          name="nameSurname"
+          [(ngModel)]="addContact.nameSurname"
+        />
+      </p>
+      <p>
+        Müştərinin vəzifəsi
+        <input
+          type="text"
+          nz-input
+          name="position"
+          [(ngModel)]="addContact.position"
+        />
+      </p>
+      <p>
+        Email
+        <input
+          type="text"
+          nz-input
+          name="email"
+          [(ngModel)]="addContact.email"
+          required
+        />
+      </p>
+      <p>
+        Müştərinin Baza identifikasiyası
+        <input
+          type="number"
+          nz-input
+          name="clientId"
+          [(ngModel)]="addContact.clientId"
+          required
+        />
+      </p>
+      <p>
+        Müştərinin növü
+        <nz-select
+          nzShowSearch
+          name="insuredType"
+          style="width: 100%"
+          [(ngModel)]="addContact.insuredType"
+          [nzShowArrow]="true"
+          required
+        >
+          <nz-option
+            *ngFor="let b of insuredTypes$ | async"
+            [nzLabel]="b.description"
+            [nzValue]="b.type"
+          ></nz-option>
+        </nz-select>
+      </p>
+      <p>
+        Sığorta seriyası
+        <nz-select
+          nzShowSearch
+          nzPlaceHolder="SŞ axtar"
+          name="policySeries"
+          style="width: 100%"
+          [(ngModel)]="addContact.policySeries"
+          required
+          [nzShowArrow]="true"
+        >
+          <nz-option
+            *ngFor="let b of policySeries$ | async"
+            [nzLabel]="b.code"
+            [nzValue]="b.code"
+          ></nz-option>
+        </nz-select>
+      </p>
+    </form>
+  </ng-container>
+</nz-modal>
+<nz-skeleton *ngIf="loading$ | async" [nzActive]="true"></nz-skeleton>
