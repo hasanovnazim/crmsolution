@@ -1,17 +1,12 @@
 [
  { 
-   "id": 1,
-   "SalesCampaignId": 1,
-   "SalesType": "Mebleg Endirimi"		
+   "id": 10,
+   "SalesCampaignId": 10,
+   "SalesType": "Məbləğ Endirimi"		
  },
  { 
-   "id": 2,
-   "SalesCampaignId": 2,
+   "id": 20,
+   "SalesCampaignId": 20,
    "SalesType": "Faiz Endirimi"		  		
- },
- { 
-   "id": 3,
-   "SalesCampaignId": 3,
-   "SalesType": "Hediyye Secimi"
  }
 ]

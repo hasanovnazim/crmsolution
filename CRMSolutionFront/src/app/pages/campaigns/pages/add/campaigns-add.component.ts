@@ -1,25 +1,26 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from "@angular/core";
 
-import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
+import { NzDatePickerComponent } from "ng-zorro-antd/date-picker";
 
-import { Facade } from '../../+state/facade';
+import { Facade } from "../../+state/facade";
 
-import { SalesCampaignModel } from 'src/app/models/salesCampaign.model';
-import { InsuredTypesModel } from 'src/app/models/insuredTypes.model';
-import { SeriesModel } from 'src/app/models/series.model';
-import { CustomerCategoryModel } from 'src/app/models/customerCategory.model';
-import { CustomerCategoryRefundModel } from 'src/app/models/customerCategoryRefund.model';
-import { EventHistoryModel } from 'src/app/models/eventHistory.model';
-import { DiscountTypeModel } from 'src/app/models/discountType.model';
-import { PresentsModel } from 'src/app/models/presents.model';
+import { SalesCampaignModel } from "src/app/models/salesCampaign.model";
+import { InsuredTypesModel } from "src/app/models/insuredTypes.model";
+import { SeriesModel } from "src/app/models/series.model";
+import { CustomerCategoryModel } from "src/app/models/customerCategory.model";
+import { CustomerCategoryRefundModel } from "src/app/models/customerCategoryRefund.model";
+import { EventHistoryModel } from "src/app/models/eventHistory.model";
+import { DiscountTypeModel } from "src/app/models/discountType.model";
+import { PresentsModel } from "src/app/models/presents.model";
+import { DiscountFirstModel } from 'src/app/models/discountFirst.model';
+import { DiscountSecondModel } from 'src/app/models/discountSecond.model';
 
 @Component({
-  selector: 'app-campaigns-add',
-  templateUrl: './campaigns-add.component.html',
-  styleUrls: ['./campaigns-add.component.scss']
+  selector: "app-campaigns-add",
+  templateUrl: "./campaigns-add.component.html",
+  styleUrls: ["./campaigns-add.component.scss"],
 })
 export class CampaignsAddComponent implements OnInit {
-
   salesCampaign: SalesCampaignModel[] = [];
   insuredTypes: InsuredTypesModel[] = [];
   series: SeriesModel[] = [];
@@ -28,6 +29,8 @@ export class CampaignsAddComponent implements OnInit {
   eventHistory: EventHistoryModel[] = [];
   discountType: DiscountTypeModel[] = [];
   presents: PresentsModel[] = [];
+  discountFirst: DiscountFirstModel[] = [];
+  discountSecond: DiscountSecondModel[] = [];
 
   insuredTypesModel: any;
   salesCampaignModel: any;
@@ -37,63 +40,67 @@ export class CampaignsAddComponent implements OnInit {
   eventHistoryModel: any;
   discountTypeModel: any;
   presentsModel: any;
+  discountFirstModel: any;
+  discountSecondModel: any;
 
   constructor(
-    private salesCapaignFacede: Facade, 
-    private insuredTypesFacede: Facade, 
+    private salesCapaignFacede: Facade,
+    private insuredTypesFacede: Facade,
     private seriesFacede: Facade,
     private customerCategoryFacede: Facade,
     private customerCategoryRefundFacede: Facade,
     private eventHistoryFacede: Facade,
     private discountTypeFacede: Facade,
-    private presentsFacede: Facade,
+    private presentsFacede: Facade
   ) {}
 
   ngOnInit(): void {
-    this.salesCapaignFacede.getSalesCampaign();
-    this.salesCapaignFacede.salesCampaign$.subscribe((v) => {
-      this.salesCampaign = v;
-    });
+    // this.salesCapaignFacede.getSalesCampaign();
+    // this.salesCapaignFacede.salesCampaign$.subscribe((v) => {
+    //   this.salesCampaign = v;
+    // });
 
     this.insuredTypesFacede.getInsuredTypes();
-    this.insuredTypesFacede.insuredTypes$.subscribe((v) => {
-      this.insuredTypes = v;
+    this.insuredTypesFacede.insuredTypes$.subscribe((v: any) => {
+      this.insuredTypes = v.data;
     });
 
-    this.seriesFacede.getSeries();
-    this.seriesFacede.series$.subscribe((v) => {
+    this.seriesFacede.getSeries().subscribe((v:any) => {
       this.series = v;
     });
+    // this.seriesFacede.series$.subscribe((v: any) => {
+    //   this.series = v.data;
+    // });
 
-    this.customerCategoryFacede.getCustomerCategory();
-    this.customerCategoryFacede.customerCategory$.subscribe((v) => {
-      this.customerCategory = v;
-    });
+    // this.customerCategoryFacede.getCustomerCategory();
+    // this.customerCategoryFacede.customerCategory$.subscribe((v:any) => {
+    //   this.customerCategory = v.data;
+    // });
 
-    this.customerCategoryRefundFacede.getCustomerCategoryRefund();
-    this.customerCategoryRefundFacede.customerCategoryRefund$.subscribe((v) => {
-      this.customerCategoryRefund = v;
-    });
+    // this.customerCategoryRefundFacede.getCustomerCategoryRefund();
+    // this.customerCategoryRefundFacede.customerCategoryRefund$.subscribe((v) => {
+    //   this.customerCategoryRefund = v;
+    // });
 
-    this.eventHistoryFacede.getEventHistory();
-    this.eventHistoryFacede.eventHistory$.subscribe((v) => {
-      this.eventHistory = v;
-    });
+    // this.eventHistoryFacede.getEventHistory();
+    // this.eventHistoryFacede.eventHistory$.subscribe((v) => {
+    //   this.eventHistory = v;
+    // });
 
-    this.discountTypeFacede.getDiscountType();
-    this.discountTypeFacede.discountType$.subscribe((v) => {
-      this.discountType = v;
-    });
+    // this.discountTypeFacede.getDiscountType();
+    // this.discountTypeFacede.discountType$.subscribe((v) => {
+    //   this.discountType = v;
+    // });
 
-    this.presentsFacede.getPresents();
-    this.presentsFacede.presents$.subscribe((v) => {
-      this.presents = v;
-    });
+    // this.presentsFacede.getPresents();
+    // this.presentsFacede.presents$.subscribe((v) => {
+    //   this.presents = v;
+    // });
   }
 
   startValue: Date | null = null;
   endValue: Date | null = null;
-  @ViewChild('endDatePicker') endDatePicker!: NzDatePickerComponent;
+  @ViewChild("endDatePicker") endDatePicker!: NzDatePickerComponent;
 
   disabledStartDate = (startValue: Date): boolean => {
     if (!startValue || !this.endValue) {
@@ -113,35 +120,108 @@ export class CampaignsAddComponent implements OnInit {
     if (!open) {
       this.endDatePicker.open();
     }
-    console.log('handleStartOpenChange', open);
+    console.log("handleStartOpenChange", open);
   }
 
   handleEndOpenChange(open: boolean): void {
-    console.log('handleEndOpenChange', open);
+    console.log("handleEndOpenChange", open);
   }
 
-  listOfControl: Array<{ id: number; controlInstance: string }> = [];
+  changeDiscount(e?: MouseEvent): void {
+    console.log("change discount");
+    this.discountFirst = [];
+    this.discountSecond = [];
+  }
 
-  addField(e?: MouseEvent): void {
+  changeMinSigorta(e?: number): void {
+    this.minSigorta = e || null;
+  }
+
+  minSigorta: number | null = null;
+  key: string = '';
+
+  changeDiscountFirst(e: Event): any {
+    const target = e.target as HTMLInputElement;
+    const name = target.name;
+    const id = parseInt(target.id);
+    this.discountFirst[id][name as keyof DiscountFirstModel] = parseInt(target.value)
+  }
+  changeDiscountSecond(e: Event): any {
+    const target = e.target as HTMLInputElement;
+    const name = target.name;
+    const id = parseInt(target.id);
+    this.discountSecond[id][name as keyof DiscountSecondModel] = parseInt(target.value)
+  }
+
+  addDiscountFirst(e?: MouseEvent): void {
     if (e) {
       e.preventDefault();
     }
-    const id = this.listOfControl.length > 0 ? this.listOfControl[this.listOfControl.length - 1].id + 1 : 0;
+    const id = this.discountFirst.length > 0 ? this.discountFirst[this.discountFirst.length - 1].id + 1 : 0;
+
+    let minVal = 0;
+
+    if(id === 0) {
+      minVal = this.minSigorta || 0
+    } else {
+      minVal = this.discountFirst[id - 1].maxValue;
+    }
+    const control = {
+      id,
+      minValue: minVal,
+      maxValue: 0,
+      discount: 0
+    };
+
+    this.discountFirst.push(control);
+    console.log("discountFirst", this.discountFirst);
+  }
+
+  removeDiscountFirst(i: { id: number, minValue: number, maxValue: number, discount: number }, e: MouseEvent): void {
+    e.preventDefault();
+    if (this.discountFirst.length > 1) {
+      const index = this.discountFirst.indexOf(i);
+      this.discountFirst.splice(index, 1);
+      console.log(this.discountFirst);
+    }
+  }
+
+  addDiscountSecond(e?: MouseEvent): void {
+    if (e) {
+      e.preventDefault();
+    }
+    const id = this.discountSecond.length > 0 ? this.discountSecond[this.discountSecond.length - 1].id + 1 : 0;
+
+    let minVal = 0;
+
+    if(id === 0) {
+      minVal = this.minSigorta || 0
+    } else {
+      minVal = this.discountSecond[id - 1].maxValue;
+    }
 
     const control = {
       id,
-      controlInstance: `passenger${id}`
+      minValue: minVal,
+      maxValue: 0,
+      discount: 0
     };
-    this.listOfControl.push(control);
-    console.log("listOfControl", this.listOfControl);
+    this.discountSecond.push(control);
+    console.log("discountSecond", this.discountSecond);
   }
 
-  removeField(i: { id: number; controlInstance: string }, e: MouseEvent): void {
+  removeDiscountSecond(i: { id: number, minValue: number, maxValue: number, discount: number }, e: MouseEvent): void {
     e.preventDefault();
-    if (this.listOfControl.length > 1) {
-      const index = this.listOfControl.indexOf(i);
-      this.listOfControl.splice(index, 1);
-      console.log(this.listOfControl);
+    if (this.discountSecond.length > 1) {
+      const index = this.discountSecond.indexOf(i);
+      this.discountSecond.splice(index, 1);
+      console.log(this.discountSecond);
     }
+  }
+  getPolicySeries(event: any) {
+    this.seriesFacede.getSeries(event).subscribe((v: any) => {
+      debugger
+      this.series = v;
+    });
   }
 }

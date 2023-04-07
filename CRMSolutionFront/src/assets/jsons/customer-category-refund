@@ -1,14 +1,14 @@
 [
  { 
-   "id": 1,
+   "id": 10,
    "CustomerCategoryRefund": "Yeni müştərilər"		
  },
  { 
-   "id": 2,
+   "id": 20,
    "CustomerCategoryRefund": "Yeniləmə müştərilər"   		
  },
  { 
-   "id": 3,
+   "id": 30,
    "CustomerCategoryRefund": "Bütün müştərilər"		
  }
 ]

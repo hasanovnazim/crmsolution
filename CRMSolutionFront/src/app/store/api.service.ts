@@ -12,8 +12,12 @@ export class ApiService {
   public get<T>(url: string): Observable<T> {
     return this.http.get<T>(this.baseUrl + url);
   }
-  public post<T>(url: string, data: any, options?: any) {
-    return this.http.post<T>(this.baseUrl + url, data, options);
+  public post<T>(url: string, data: any, options?: any): Observable<T> {
+    return this.http.post<T>(
+      this.baseUrl + url,
+      data,
+      options
+    ) as unknown as Observable<T>;
   }
   public put<T>(url: string, data: any, options?: any) {
     return this.http.put<T>(this.baseUrl + url, data, options);

@@ -1,4 +1,4 @@
 export const ENDPOINT_CONFIG = {
-    apiVersion: 'v1',
+    apiVersion: 'v1/',
 };
   

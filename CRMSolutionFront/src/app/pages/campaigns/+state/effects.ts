@@ -51,7 +51,7 @@ export class Effects {
       this.actions$.pipe(
         ofType(eActions.getInsuredTypes),
         switchMap(() =>
-          this.apiService.get<InsuredTypesModel[]>('insured-types').pipe(
+          this.apiService.get<InsuredTypesModel[]>('List/insureTypes').pipe(
             map((insuredTypes) => {
               return eActions.getInsuredTypesComplete({ insuredTypes });
             })
@@ -65,7 +65,7 @@ export class Effects {
       this.actions$.pipe(
         ofType(eActions.getSeries),
         switchMap(() =>
-          this.apiService.get<SeriesModel[]>('series').pipe(
+          this.apiService.get<SeriesModel[]>('List/policySeries').pipe(
             map((series) => {
               return eActions.getSeriesComplete({ series });
             })

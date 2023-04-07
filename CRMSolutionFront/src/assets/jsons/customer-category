@@ -1,10 +1,14 @@
 [
  { 
-   "id": 1,
+   "id": 10,
    "CustomerCategory": "Hüquqi"		
  },
  { 
-   "id": 2,
+   "id": 20,
    "CustomerCategory": "Fiziki"   		
- }
+ },
+ { 
+  "id": 30,
+  "CustomerCategory": "Hər kəs"   		
+}
 ]

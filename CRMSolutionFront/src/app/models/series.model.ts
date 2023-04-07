@@ -1,4 +1,6 @@
 export interface SeriesModel { 
-  id: number,
-  Series: string
+  codeId: number,
+  code: string;
+  codeDescr: string
+  insureTypeId: number
 }

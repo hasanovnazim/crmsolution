@@ -9,5 +9,11 @@ export enum FeaturesEnum {
   CUSTOMERCATEGORYREFUND_STATE = "customerCategoryRefundState",
   EVENTHISTORY_STATE = "eventHistoryState",
   DISCOUNTTPYE_STATE = "discountTypeState",
-  PRESENTS_STATE = "presentsState"
+  PRESENTS_STATE = "presentsState",
+  NOTIFICATIONS = 'notification',
+  CANCELLATION = 'cancellation',
+  AUTH = 'auth',
+  HISTORY = 'history',
+  SMS_CHECK_LIST = 'smsCheckList',
+  Tasks = 'tasks',
 }

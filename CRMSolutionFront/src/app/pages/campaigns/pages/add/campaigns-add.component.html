@@ -10,9 +10,10 @@
           <nz-select
             [nzSize]="'large'"
             [(ngModel)]="insuredTypesModel"
+              (ngModelChange)="getPolicySeries($event)"
             nzPlaceHolder="Sığorta növü"
           >
-            <nz-option *ngFor="let option of insuredTypes" [nzValue]="option.id" [nzLabel]="option.InsuranceName"></nz-option>
+            <nz-option *ngFor="let option of insuredTypes" [nzValue]="option.id" [nzLabel]="option.name"></nz-option>
           </nz-select>
         </div>
         <div nz-col nzSpan="12">
@@ -22,7 +23,7 @@
             nzMode="tags"
             nzPlaceHolder="Seriyalar"
           >
-            <nz-option *ngFor="let option of series" [nzValue]="option.id" [nzLabel]="option.Series"></nz-option>
+            <nz-option *ngFor="let option of series" [nzValue]="option.codeId" [nzLabel]="option.code"></nz-option>
           </nz-select>
         </div>
       </div>
@@ -84,15 +85,16 @@
         </div>
         <div nz-col nzSpan="12">
           <input 
-            type="text" 
+            type="number"  
             nz-input 
             [ngModel]="''" 
-            placeholder="Minimum sığorta haqqı" 
+            placeholder="Minimum sığorta haqqı"
+            (ngModelChange)="changeMinSigorta($event)" 
           />
         </div>
       </div>
       <div nz-row [nzGutter]="24">
-        <div nz-col nzSpan="12">
+        <div nz-col nzSpan="8">
           <input 
             type="text" 
             nz-input 
@@ -100,7 +102,7 @@
             placeholder="Promo kod" 
           />
         </div>
-        <div nz-col nzSpan="12">
+        <div nz-col nzSpan="8">
           <nz-select
             [nzSize]="'large'"
             [(ngModel)]="salesCampaignModel"
@@ -109,20 +111,17 @@
             <nz-option *ngFor="let option of salesCampaign" [nzValue]="option.id" [nzLabel]="option.SalesCampaign"></nz-option>
           </nz-select>
         </div>
-      </div>
-      <div nz-row [nzGutter]="24" *ngIf="salesCampaignModel === 1"> 
-        <div nz-col nzSpan="12">
+        <div nz-col nzSpan="8" *ngIf="salesCampaignModel === 1">
           <nz-select
             [nzSize]="'large'"
             [(ngModel)]="discountTypeModel"
             nzPlaceHolder="Endirim növü"
+            (ngModelChange)="changeDiscount($event)"
           >
             <nz-option *ngFor="let option of discountType" [nzValue]="option.SalesCampaignId" [nzLabel]="option.SalesType"></nz-option>
           </nz-select>
         </div>
-      </div>
-      <div nz-row [nzGutter]="24" *ngIf="salesCampaignModel === 2">
-        <div nz-col nzSpan="12">
+        <div nz-col nzSpan="8" *ngIf="salesCampaignModel === 2">
           <nz-select
             [nzSize]="'large'"
             nzMode="tags" 
@@ -134,79 +133,97 @@
         </div>  
       </div>
       <div nz-row *ngIf="discountTypeModel === 1">
-        <nz-form-item *ngFor="let control of listOfControl; let i = index">
+        <nz-form-item *ngFor="let control of discountFirst; let i = index">
           <div nz-row [nzGutter]="24">
             <div nz-col nzSpan="6">
               <input 
-                type="text" 
+                type="number" 
                 nz-input 
-                [ngModel]="''" 
-                placeholder="Minimum s.h." 
+                [ngModel]="control.minValue" 
+                placeholder="Minimum s.h."
+                [attr.id]="control.id"
+                name="minValue"
+                (input)="changeDiscountFirst($event)" 
               />
             </div>
             <div nz-col nzSpan="6">
               <input 
-                type="text" 
+                type="number" 
                 nz-input 
-                [ngModel]="''" 
-                placeholder="Maksimum s.h." 
+                [ngModel]="control.maxValue" 
+                placeholder="Maksimum s.h."
+                [attr.id]="control.id"
+                name="maxValue"
+                (input)="changeDiscountFirst($event)"
               />
             </div>
             <div nz-col nzSpan="10">
               <input 
-                type="text" 
+                type="number" 
                 nz-input 
-                [ngModel]="''" 
-                placeholder="Endirim məbləği" 
+                [ngModel]="control.discount"  
+                placeholder="Endirim məbləği"
+                [attr.id]="control.id"
+                name="discount"
+                (input)="changeDiscountFirst($event)" 
               />
             </div>
             <div nz-col nzSpan="2">
-              <button (click)="removeField(control, $event)" nz-button nzType="default" nzShape="circle">
+              <button (click)="removeDiscountFirst(control, $event)" nz-button nzType="default" nzShape="circle">
                 <span nz-icon nzType="delete"></span>
               </button>
             </div>
           </div>
         </nz-form-item>
-        <button nz-button [nzSize]="'large'" nzType="primary" (click)="addField($event)">
+        <button nz-button [nzSize]="'large'" nzType="primary" (click)="addDiscountFirst($event)">
           <span nz-icon nzType="plus"></span>
           Əlavə et
         </button>
       </div>
       <div nz-row *ngIf="discountTypeModel === 2">
-        <nz-form-item *ngFor="let control of listOfControl; let i = index">
+        <nz-form-item *ngFor="let control of discountSecond; let i = index">
           <div nz-row [nzGutter]="24">
             <div nz-col nzSpan="6">
               <input 
-                type="text" 
+                type="number"
                 nz-input 
-                [ngModel]="''" 
-                placeholder="Minimum s.h." 
+                [ngModel]="control.minValue" 
+                placeholder="Minimum s.h."
+                [attr.id]="control.id"
+                name="minValue"
+                (input)="changeDiscountSecond($event)" 
               />
             </div>
             <div nz-col nzSpan="6">
               <input 
-                type="text" 
+                type="number"  
                 nz-input 
-                [ngModel]="''" 
-                placeholder="Maksimum s.h." 
+                [ngModel]="control.maxValue"  
+                placeholder="Maksimum s.h."
+                [attr.id]="control.id"
+                name="maxValue"
+                (input)="changeDiscountSecond($event)"
               />
             </div>
             <div nz-col nzSpan="10">
               <input 
-                type="text" 
+                type="number" 
                 nz-input 
-                [ngModel]="''" 
-                placeholder="Endirim faizi" 
+                [ngModel]="control.discount"  
+                placeholder="Endirim faizi"
+                [attr.id]="control.id"
+                name="discount"
+                (input)="changeDiscountSecond($event)"
               />
             </div>
             <div nz-col nzSpan="2">
-              <button (click)="removeField(control, $event)" nz-button nzType="default" nzShape="circle">
+              <button (click)="removeDiscountSecond(control, $event)" nz-button nzType="default" nzShape="circle">
                 <span nz-icon nzType="delete"></span>
               </button>
             </div>
           </div>
         </nz-form-item>
-        <button nz-button [nzSize]="'large'" nzType="primary" (click)="addField($event)">
+        <button nz-button [nzSize]="'large'" nzType="primary" (click)="addDiscountSecond($event)">
           <span nz-icon nzType="plus"></span>
           Əlavə et
         </button>

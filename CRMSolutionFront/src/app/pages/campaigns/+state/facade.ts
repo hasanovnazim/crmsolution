@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { filter, Observable, skip } from 'rxjs';
+import { filter, map, Observable, skip } from 'rxjs';
 import { Selectors } from './selectors';
 import { CampaignListModel } from '../../../models/campaignList.model';
 import { SalesCampaignModel } from '../../../models/salesCampaign.model';
@@ -12,10 +12,12 @@ import { CustomerCategoryRefundModel } from 'src/app/models/customerCategoryRefu
 import { EventHistoryModel } from 'src/app/models/eventHistory.model';
 import { DiscountTypeModel } from 'src/app/models/discountType.model';
 import { PresentsModel } from 'src/app/models/presents.model';
+import { ApiService } from 'src/app/store/api.service';
+import { ResponsePayload } from 'src/app/models/response.model';
 
 @Injectable()
 export class Facade {
-  constructor(private store: Store<any>) {}
+  constructor(private store: Store<any>,  private api: ApiService) {}
 
   campaignList$: Observable<CampaignListModel[]> = this.store.pipe(
     select(Selectors.campaignList),
@@ -81,9 +83,17 @@ export class Facade {
   getInsuredTypes(): void {
     this.store.dispatch(Actions.getInsuredTypes());
   }
-  getSeries(): void {
-    this.store.dispatch(Actions.getSeries());
+  getSeries(insureType: string=''): any {
+
+    let param = '';
+    if (insureType) param = `?types=${insureType}`;
+    return this.api
+      .get<ResponsePayload<SeriesModel>>(
+        'List/policySeries'+param
+      )
+      .pipe(map((v) => v.data));
   }
+  
   getCustomerCategory(): void {
     this.store.dispatch(Actions.getCustomerCategory());
   }

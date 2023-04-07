@@ -5,3 +5,4 @@ export const environment = {
   loginUrl: "https://prelogin.pasha-insurance.az/",
   ...ENDPOINT_CONFIG,
 };
+  
