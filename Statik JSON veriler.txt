@@ -1,0 +1,136 @@
+export const discountCampaignType= [
+  {
+    id: 10,
+    StaticCampaignType: "Statik",
+  },
+  {
+    id: 20,
+    DynamicCampaignType: "Dinamik",
+  }, 
+];
+
+
+
+export const dynamicCampaignType= [
+  {
+    id: 10,
+    CarYear: "Avtomobilin istehsal ilinə görə",
+  },
+  {
+    id: 20,
+    BrandAndYear: "Avtomobilin marka və istehsal ilinə görə",
+  }, 
+  {
+    id: 30,
+    BonusMalus: "İcbari bonus əmsalı aralığına görə",
+  },
+];
+
+
+export const productionYears= [
+  {
+    id: 10,
+    yearFirst: 2001,
+  },
+  {
+    id: 20,
+    yearSecond: 2002,
+  }, 
+  {
+    id: 30,
+    yearThird: 2003,
+  },
+  {
+    id: 40,
+    yearFourth: 2004,
+  },
+];
+
+
+export const makesCar= [
+  {
+    id: 10,
+    toyotaMake: "Toyota",
+  },
+  {
+    id: 20,
+    lexusMake: "Lexus",
+  }, 
+  {
+    id: 30,
+    hondaMake: "Honda",
+  },
+  {
+    id: 40,
+    mercedesMake: "Mercedes",
+  },
+];
+
+(* Sadece araba markalari back-dan gelicektir.Şimdilik statik yapalım, 
+artık bizimkiler hazır etdikden sonra ben kendim eklerim.)
+
+===================================================
+Her ihtimale tüm verilerin gideceği Collection-u da buraya bırakıyorum.Class 
+isimlerini buradan aldım.
+===================================================
+
+public List<DynamicDiscountDetailRequest>? DynamicDiscountDetails { get; set; }
+
+
+
+public class DynamicDiscountDetailRequest
+
+    {
+
+        /// <summary>
+
+        /// İdentifikasiya
+
+        /// </summary>
+
+        public int DynamicDiscountDetailID { get; set; }
+
+        /// <summary>
+
+        /// Minimum bonus-malus faizi
+
+        /// </summary>
+
+        public int MinBonusAmount { get; set; }
+
+        /// <summary>
+
+        /// Maksimum bonus-malus faizi
+
+        /// </summary>
+
+        public int MaxBonusAmount { get; set; }
+
+        /// <summary>
+
+        /// Endirim məbləği
+
+        /// </summary>
+
+        public int DiscountAmount { get; set; }
+
+        /// <summary>
+
+        /// Avtomobilin istehsal ili
+
+        /// </summary>
+
+        public string ProductionYears { get; set; }
+
+        /// <summary>
+
+        /// Avtomobilin modeli
+
+        /// </summary>
+
+        public string Makes { get; set; }
+
+    }
+
+
+

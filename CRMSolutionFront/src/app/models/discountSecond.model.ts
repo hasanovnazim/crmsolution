@@ -1,6 +1,6 @@
 export interface DiscountSecondModel { 
     id: number, 
-    minValue: number, 
-    maxValue: number, 
-    discount: number
+    minValue: any, 
+    maxValue: any, 
+    discount: any
   }

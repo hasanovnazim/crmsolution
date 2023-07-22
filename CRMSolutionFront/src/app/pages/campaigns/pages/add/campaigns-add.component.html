@@ -1,4 +1,4 @@
-<nz-input-group [nzSize]="'large'">
+<form [formGroup]="campaignReactiveForm" (submit)="submitCampaign()">
   <div class="wrapper">
     <div class="header">
       <button nz-button nzType="primary" nzShape="circle">1</button>
@@ -7,24 +7,37 @@
     <div class="content">
       <div nz-row [nzGutter]="24">
         <div nz-col nzSpan="12">
-          <nz-select
-            [nzSize]="'large'"
-            [(ngModel)]="insuredTypesModel"
-              (ngModelChange)="getPolicySeries($event)"
-            nzPlaceHolder="Sığorta növü"
-          >
-            <nz-option *ngFor="let option of insuredTypes" [nzValue]="option.id" [nzLabel]="option.name"></nz-option>
-          </nz-select>
+          <ng-container *ngIf="insuredTypes$ | async as insuredTypes">
+            <label>Sığorta növü</label>
+            <nz-select
+              formControlName="insureTypeId"
+              nzPlaceHolder="Sığorta növü seçin"
+              [nzDisabled]="isEdit"
+            >
+              <nz-option
+                *ngFor="let option of insuredTypes"
+                [nzValue]="option.id"
+                [nzLabel]="option.name"
+              ></nz-option>
+            </nz-select>
+          </ng-container>
         </div>
         <div nz-col nzSpan="12">
-          <nz-select
-            [nzSize]="'large'"
-            [(ngModel)]="seriesModel"
-            nzMode="tags"
-            nzPlaceHolder="Seriyalar"
-          >
-            <nz-option *ngFor="let option of series" [nzValue]="option.codeId" [nzLabel]="option.code"></nz-option>
-          </nz-select>
+          <ng-container *ngIf="series$ | async as series">
+            <label>Seriyalar</label>
+            <nz-select
+              formControlName="policySeries"
+              nzMode="multiple"
+              nzPlaceHolder="Seriyalar seçin"
+              [nzDisabled]="isEdit"
+            >
+              <nz-option
+                *ngFor="let option of series"
+                [nzValue]="option.code"
+                [nzLabel]="option.code"
+              ></nz-option>
+            </nz-select>
+          </ng-container>
         </div>
       </div>
     </div>
@@ -37,33 +50,61 @@
     <div class="content">
       <div nz-row [nzGutter]="24">
         <div nz-col nzSpan="8">
-          <nz-select
-            [nzSize]="'large'"
-            [(ngModel)]="customerCategoryModel"
-            nzMode="tags" 
-            nzPlaceHolder="Sığortalı növü"
-          >
-            <nz-option *ngFor="let option of customerCategory" [nzValue]="option.id" [nzLabel]="option.CustomerCategory"></nz-option>
-          </nz-select>
+          <ng-container *ngIf="customerCategory$ | async as customerCategory">
+            <label>Sığortalı növü</label>
+            <nz-select
+              formControlName="clientCategoryId"
+              nzPlaceHolder="Sığortalı növü seçin"
+              [nzDisabled]="isEdit"
+            >
+              <nz-option
+                *ngFor="let option of customerCategory"
+                [nzValue]="option.id"
+                [nzLabel]="option.CustomerCategory"
+              ></nz-option>
+            </nz-select>
+          </ng-container>
         </div>
         <div nz-col nzSpan="8">
-          <nz-select
-            [nzSize]="'large'"
-            [(ngModel)]="customerCategoryRefundModel"
-            nzPlaceHolder="Müştəri kateqoriyası"
+          <ng-container
+            *ngIf="customerCategoryRefund$ | async as customerCategoryRefund"
           >
-            <nz-option *ngFor="let option of customerCategoryRefund" [nzValue]="option.id" [nzLabel]="option.CustomerCategoryRefund"></nz-option>
-          </nz-select>
+            <label>Müştəri kateqoriyası</label>
+            <nz-select
+              formControlName="clientCategoryBelongCampaignId"
+              nzPlaceHolder="Müştəri kateqoriyası seçin"
+              [nzDisabled]="isEdit"
+            >
+              <nz-option
+                *ngFor="let option of customerCategoryRefund"
+                [nzValue]="option.id"
+                [nzLabel]="option.CustomerCategoryRefund"
+              ></nz-option>
+            </nz-select>
+          </ng-container>
         </div>
-        <div nz-col nzSpan="8" >
-          <nz-select
-            [nzSize]="'large'"
-            [(ngModel)]="eventHistoryModel"
-            nzPlaceHolder="Hadisə tarixçəsi"
-            [disabled]="customerCategoryRefundModel === 1"
+        <div nz-col nzSpan="8">
+          <ng-container
+            *ngIf="
+              campaignReactiveForm.get('clientCategoryBelongCampaignId')!
+                .value !== 10
+            "
           >
-            <nz-option *ngFor="let option of eventHistory" [nzValue]="option.id" [nzLabel]="option.EventHistory"></nz-option>
-          </nz-select>
+            <ng-container *ngIf="eventHistory$ | async as eventHistory">
+              <label>Hadisə tarixçəsi</label>
+              <nz-select
+                formControlName="choiseClaimHistoryId"
+                nzPlaceHolder="Hadisə tarixçəsi seçin"
+                [nzDisabled]="isEdit"
+              >
+                <nz-option
+                  *ngFor="let option of eventHistory"
+                  [nzValue]="option.id"
+                  [nzLabel]="option.EventHistory"
+                ></nz-option>
+              </nz-select>
+            </ng-container>
+          </ng-container>
         </div>
       </div>
     </div>
@@ -76,193 +117,246 @@
     <div class="content">
       <div nz-row [nzGutter]="24">
         <div nz-col nzSpan="12">
-          <input 
-            type="text" 
-            nz-input 
-            [ngModel]="''" 
-            placeholder="Kampaniya adı" 
+          <label>Kampaniya adı</label>
+          <input
+            type="text"
+            nz-input
+            formControlName="productName"
+            placeholder="Kampaniya adı daxil edin"
           />
         </div>
         <div nz-col nzSpan="12">
-          <input 
-            type="number"  
-            nz-input 
-            [ngModel]="''" 
-            placeholder="Minimum sığorta haqqı"
-            (ngModelChange)="changeMinSigorta($event)" 
+          <label>Minimum sığorta haqqı</label>
+          <input
+            type="number"
+            nz-input
+            formControlName="minimumInsuranceAmount"
+            placeholder="Minimum sığorta haqqı daxil edin"
           />
         </div>
       </div>
       <div nz-row [nzGutter]="24">
         <div nz-col nzSpan="8">
-          <input 
-            type="text" 
-            nz-input 
-            [ngModel]="''" 
-            placeholder="Promo kod" 
+          <label>Promo kod</label>
+          <input
+            type="text"
+            nz-input
+            formControlName="promoCode"
+            placeholder="Promo kod daxil edin"
           />
         </div>
         <div nz-col nzSpan="8">
-          <nz-select
-            [nzSize]="'large'"
-            [(ngModel)]="salesCampaignModel"
-            nzPlaceHolder="Satış kampaniyası"
-          >
-            <nz-option *ngFor="let option of salesCampaign" [nzValue]="option.id" [nzLabel]="option.SalesCampaign"></nz-option>
-          </nz-select>
+          <ng-container *ngIf="salesCampaign$ | async as salesCampaign">
+            <label>Kampaniya növü</label>
+            <nz-select
+              formControlName="campaignType"
+              nzPlaceHolder="Kampaniya növü seçin"
+              [nzDisabled]="isEdit"
+            >
+              <nz-option
+                *ngFor="let option of salesCampaign"
+                [nzValue]="option.id"
+                [nzLabel]="option.SalesCampaign"
+              ></nz-option>
+            </nz-select>
+          </ng-container>
         </div>
-        <div nz-col nzSpan="8" *ngIf="salesCampaignModel === 1">
-          <nz-select
-            [nzSize]="'large'"
-            [(ngModel)]="discountTypeModel"
-            nzPlaceHolder="Endirim növü"
-            (ngModelChange)="changeDiscount($event)"
-          >
-            <nz-option *ngFor="let option of discountType" [nzValue]="option.SalesCampaignId" [nzLabel]="option.SalesType"></nz-option>
-          </nz-select>
+        <div
+          nz-col
+          nzSpan="8"
+          *ngIf="campaignReactiveForm.get('campaignType')!.value === 10"
+        >
+          <ng-container *ngIf="discountType$ | async as discountType">
+            <label>Endirim növü</label>
+            <nz-select
+              nzAllowClear
+              nzPlaceHolder="Endirim növü seçin"
+              formControlName="discountType"
+              [nzDisabled]="isEdit"
+            >
+              <nz-option
+                *ngFor="let option of discountType"
+                [nzValue]="option.SalesCampaignId"
+                [nzLabel]="option.SalesType"
+              ></nz-option>
+            </nz-select>
+          </ng-container>
         </div>
-        <div nz-col nzSpan="8" *ngIf="salesCampaignModel === 2">
-          <nz-select
-            [nzSize]="'large'"
-            nzMode="tags" 
-            [(ngModel)]="presentsModel"
-            nzPlaceHolder="Hədiyyə seçimi"
-          >
-            <nz-option *ngFor="let option of presents" [nzValue]="option.id" [nzLabel]="option.PresentName"></nz-option>
-          </nz-select>
-        </div>  
+        <!--        <div-->
+        <!--          nz-col-->
+        <!--          nzSpan="8"-->
+        <!--          *ngIf="campaignReactiveForm.get('campaignType')!.value === 20"-->
+        <!--        >-->
+        <!--          <ng-container *ngIf="presents$ | async as presents">-->
+        <!--            <nz-select-->
+        <!--              nzMode="tags"-->
+        <!--              nzPlaceHolder="Hədiyyə seçimi"-->
+        <!--              [nzDisabled]="isEdit"-->
+        <!--            >-->
+        <!--              <nz-option-->
+        <!--                *ngFor="let option of presents"-->
+        <!--                [nzValue]="option.id"-->
+        <!--                [nzLabel]="option.PresentName"-->
+        <!--              ></nz-option>-->
+        <!--            </nz-select>-->
+        <!--          </ng-container>-->
+        <!--        </div>-->
       </div>
-      <div nz-row *ngIf="discountTypeModel === 1">
-        <nz-form-item *ngFor="let control of discountFirst; let i = index">
-          <div nz-row [nzGutter]="24">
-            <div nz-col nzSpan="6">
-              <input 
-                type="number" 
-                nz-input 
-                [ngModel]="control.minValue" 
-                placeholder="Minimum s.h."
-                [attr.id]="control.id"
-                name="minValue"
-                (input)="changeDiscountFirst($event)" 
-              />
-            </div>
-            <div nz-col nzSpan="6">
-              <input 
-                type="number" 
-                nz-input 
-                [ngModel]="control.maxValue" 
-                placeholder="Maksimum s.h."
-                [attr.id]="control.id"
-                name="maxValue"
-                (input)="changeDiscountFirst($event)"
-              />
-            </div>
-            <div nz-col nzSpan="10">
-              <input 
-                type="number" 
-                nz-input 
-                [ngModel]="control.discount"  
-                placeholder="Endirim məbləği"
-                [attr.id]="control.id"
-                name="discount"
-                (input)="changeDiscountFirst($event)" 
-              />
-            </div>
-            <div nz-col nzSpan="2">
-              <button (click)="removeDiscountFirst(control, $event)" nz-button nzType="default" nzShape="circle">
-                <span nz-icon nzType="delete"></span>
-              </button>
-            </div>
-          </div>
-        </nz-form-item>
-        <button nz-button [nzSize]="'large'" nzType="primary" (click)="addDiscountFirst($event)">
-          <span nz-icon nzType="plus"></span>
-          Əlavə et
-        </button>
+      <ng-template #percentPrefix
+        ><span
+          *ngIf="campaignReactiveForm.get('discountType')?.value === 20"
+          nz-icon
+          nzType="percentage"
+        ></span
+      ></ng-template>
+      <div
+        nz-col
+        nzSpan="24"
+        *ngIf="campaignReactiveForm.get('discountType')?.value !== 'null'"
+        style="margin: 10px 0"
+      >
+        <ng-template #percentMaxPrefix
+          ><span nz-icon nzType="percentage"></span
+        ></ng-template>
+        <label>SŞ üzrə maksimum endirim faizi</label>
+        <nz-input-group [nzPrefix]="percentMaxPrefix">
+          <input
+            type="number"
+            max="90"
+            nz-input
+            formControlName="maximumDiscountLimit"
+            placeholder="Maksimum endirim faizi daxil edin"
+            name="discount"
+          />
+        </nz-input-group>
       </div>
-      <div nz-row *ngIf="discountTypeModel === 2">
-        <nz-form-item *ngFor="let control of discountSecond; let i = index">
+      <div
+        nz-row
+        *ngIf="campaignReactiveForm.get('discountType')?.value !== 'null'"
+        formArrayName="discountDetails"
+      >
+        <nz-form-item
+          *ngFor="let control of discountDetails.controls; let i = index"
+          [formGroupName]="i"
+          style="width: 100%; display: block"
+        >
           <div nz-row [nzGutter]="24">
-            <div nz-col nzSpan="6">
-              <input 
+            <div nz-col nzSpan="7">
+              <label>Minimum s.h.</label>
+              <input
                 type="number"
-                nz-input 
-                [ngModel]="control.minValue" 
-                placeholder="Minimum s.h."
-                [attr.id]="control.id"
+                nz-input
+                formControlName="minInsuranceAmount"
+                placeholder="Minimum s.h. daxil edin"
                 name="minValue"
-                (input)="changeDiscountSecond($event)" 
+                [nzStatus]="
+                  !control.get('minInsuranceAmount')!.valid ? 'error' : ''
+                "
+                (keyup)="
+                  discountMinChange(i, control.get('minInsuranceAmount')!)
+                "
               />
             </div>
-            <div nz-col nzSpan="6">
-              <input 
-                type="number"  
-                nz-input 
-                [ngModel]="control.maxValue"  
-                placeholder="Maksimum s.h."
-                [attr.id]="control.id"
+            <div nz-col nzSpan="7">
+              <label>Maksimum s.h.</label>
+              <input
+                type="number"
+                nz-input
+                formControlName="maxInsuranceAmount"
+                placeholder="Maksimum s.h. daxil edin"
                 name="maxValue"
-                (input)="changeDiscountSecond($event)"
+                [nzStatus]="
+                  !control.get('maxInsuranceAmount')!.valid ? 'error' : ''
+                "
+                (keyup)="
+                  discountMaxChange(i, control.get('maxInsuranceAmount')!)
+                "
               />
             </div>
-            <div nz-col nzSpan="10">
-              <input 
-                type="number" 
-                nz-input 
-                [ngModel]="control.discount"  
-                placeholder="Endirim faizi"
-                [attr.id]="control.id"
-                name="discount"
-                (input)="changeDiscountSecond($event)"
-              />
+            <div nz-col nzSpan="7">
+              <label>Endirim daxil</label>
+              <nz-input-group [nzPrefix]="percentPrefix">
+                <input
+                  type="number"
+                  nz-input
+                  formControlName="discountAmount"
+                  placeholder="Endirim daxil edin"
+                  name="discount"
+                />
+              </nz-input-group>
             </div>
-            <div nz-col nzSpan="2">
-              <button (click)="removeDiscountSecond(control, $event)" nz-button nzType="default" nzShape="circle">
+            <div nz-col nzSpan="3">
+              <button
+                (click)="removeDiscountDetails(i)"
+                nz-button
+                nzType="default"
+                nzShape="circle"
+                style="margin-top: 26px"
+              >
                 <span nz-icon nzType="delete"></span>
               </button>
             </div>
           </div>
         </nz-form-item>
-        <button nz-button [nzSize]="'large'" nzType="primary" (click)="addDiscountSecond($event)">
+        <button
+          nz-button
+          nzType="primary"
+          (click)="addDiscountDetails()"
+          style="width: 100%"
+          *ngIf="!isEdit"
+        >
           <span nz-icon nzType="plus"></span>
           Əlavə et
         </button>
       </div>
+
       <div nz-row [nzGutter]="24">
         <div nz-col nzSpan="12">
+          <label>Başlama tarixi</label>
           <nz-date-picker
-            [nzDisabledDate]="disabledStartDate"
-            nzShowTime
-            nzFormat="yyyy-MM-dd HH:mm:ss"
-            [(ngModel)]="startValue"
-            nzPlaceHolder="Başlama tarixi"
-            (nzOnOpenChange)="handleStartOpenChange($event)"
-            [nzSize]="'large'"
+            [nzDisabledDate]="disabledDate"
+            [nzDisabledTime]="disabledDateTime"
+            [nzShowTime]="{ nzFormat: 'HH:mm' }"
+            [nzDisabled]="isActiveCampaign"
+            style="width: 100%"
+            nzFormat="dd/MM/yyy HH:mm"
+            formControlName="startDate"
+            [nzPlaceHolder]="['Başlama tarixi']"
           ></nz-date-picker>
         </div>
         <div nz-col nzSpan="12">
+          <label>Bitmə tarixi</label>
           <nz-date-picker
-            #endDatePicker
             [nzDisabledDate]="disabledEndDate"
-            nzShowTime
-            nzFormat="yyyy-MM-dd HH:mm:ss"
-            [(ngModel)]="endValue"
-            nzPlaceHolder="Bitmə tarixi"
-            (nzOnOpenChange)="handleEndOpenChange($event)"
-            [nzSize]="'large'"
+            [nzDisabledTime]="disabledDateTime"
+            [nzShowTime]="{ nzFormat: 'HH:mm' }"
+            style="width: 100%"
+            nzFormat="dd/MM/yyy HH:mm"
+            formControlName="endDate"
+            [nzPlaceHolder]="['Başlama tarixi']"
           ></nz-date-picker>
         </div>
       </div>
       <div nz-row [nzGutter]="24">
         <div nz-col nzSpan="24">
-          <textarea rows="4" nz-input></textarea>
+          <label>Təsviri</label>
+          <textarea rows="4" formControlName="description" nz-input></textarea>
         </div>
-        
       </div>
     </div>
   </div>
   <div class="wrapper-button">
-    <button nz-button [nzSize]="'large'" nzType="primary">ƏLAVƏ ET</button>
-    <button nz-button [nzSize]="'large'" nzType="default">İMTİNA ET</button>
+    <button
+      nz-button
+      nzType="primary"
+      type="submit"
+      [nzLoading]="isLoading"
+      [disabled]="!campaignReactiveForm.valid"
+    >
+      ƏLAVƏ ET
+    </button>
+    <button nz-button nzType="default" routerLink="/campaigns">
+      İMTİNA ET
+    </button>
   </div>
-</nz-input-group>
+</form>

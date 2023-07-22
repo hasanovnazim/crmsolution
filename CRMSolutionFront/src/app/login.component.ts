@@ -14,9 +14,11 @@ export class LoginComponent implements OnInit {
   ) {}
   ngOnInit() {
     const sessionId = this.route.snapshot.queryParamMap.get('sessionId');
+    console.log(sessionId);
     if (sessionId) {
       setTimeout(() => this.authFacade.getToken(sessionId), 1000);
-    } else {
+    } 
+    else {
       window.location.href = environment.loginUrl;
     }
   }

@@ -1,51 +1,55 @@
-import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { FeaturesEnum } from '../../../store/features.enum';
-import { CampaignListState, CustomerCategoryRefundState, CustomerCategoryState, DiscountTypeState, EventHistoryState, InsuredTypesState, PresentsState, SalesCampaignState, SeriesState } from './state';
+import { createFeatureSelector, createSelector } from "@ngrx/store";
+import { FeaturesEnum } from "../../../store/features.enum";
+import { State } from "./state";
 
 export const campaignList = createSelector(
-  createFeatureSelector(FeaturesEnum.CAMPAIGNLIST_STATE),
-  (state: CampaignListState) => state.campaignList
+  createFeatureSelector(FeaturesEnum.CAMPAIGN_STATE),
+  (state: State) => state.campaignList
 );
 export const salesCampaign = createSelector(
-  createFeatureSelector(FeaturesEnum.SALESCAMPAIGN_STATE),
-  (state: SalesCampaignState) => state.salesCampaign
+  createFeatureSelector(FeaturesEnum.CAMPAIGN_STATE),
+  (state: State) => state.salesCampaign
 );
 export const insuredTypes = createSelector(
-  createFeatureSelector(FeaturesEnum.INSUREDTYPES_STATE),
-  (state: InsuredTypesState ) => state.insuredTypes
+  createFeatureSelector(FeaturesEnum.CAMPAIGN_STATE),
+  (state: State) => state.insuredTypes
 );
 export const series = createSelector(
-  createFeatureSelector(FeaturesEnum.SERIES_STATE),
-  (state: SeriesState ) => state.series
+  createFeatureSelector(FeaturesEnum.CAMPAIGN_STATE),
+  (state: State) => state.series
 );
 export const customerCategory = createSelector(
-  createFeatureSelector(FeaturesEnum.CUSTOMERCATEGORY_STATE),
-  (state: CustomerCategoryState ) => state.customerCategory
+  createFeatureSelector(FeaturesEnum.CAMPAIGN_STATE),
+  (state: State) => state.customerCategory
 );
 export const customerCategoryRefund = createSelector(
-  createFeatureSelector(FeaturesEnum.CUSTOMERCATEGORYREFUND_STATE),
-  (state: CustomerCategoryRefundState ) => state.customerCategoryRefund
+  createFeatureSelector(FeaturesEnum.CAMPAIGN_STATE),
+  (state: State) => state.customerCategoryRefund
 );
 export const eventHistory = createSelector(
-  createFeatureSelector(FeaturesEnum.EVENTHISTORY_STATE),
-  (state: EventHistoryState ) => state.eventHistory
+  createFeatureSelector(FeaturesEnum.CAMPAIGN_STATE),
+  (state: State) => state.eventHistory
 );
 export const discountType = createSelector(
-  createFeatureSelector(FeaturesEnum.DISCOUNTTPYE_STATE),
-  (state: DiscountTypeState ) => state.discountType
+  createFeatureSelector(FeaturesEnum.CAMPAIGN_STATE),
+  (state: State) => state.discountType
 );
 export const presents = createSelector(
-  createFeatureSelector(FeaturesEnum.PRESENTS_STATE),
-  (state: PresentsState ) => state.presents
+  createFeatureSelector(FeaturesEnum.CAMPAIGN_STATE),
+  (state: State) => state.presents
+);
+export const deleteCampaign = createSelector(
+  createFeatureSelector(FeaturesEnum.DELETECAMPAIGN_STATE),
+  (state: State) => state.campaignId
 );
 
 export const loading = createSelector(
-  createFeatureSelector(FeaturesEnum.CAMPAIGNLIST_STATE),
-  (state: CampaignListState | SalesCampaignState | InsuredTypesState | SeriesState | CustomerCategoryState | CustomerCategoryRefundState | EventHistoryState | DiscountTypeState | PresentsState) => state.loading
+  createFeatureSelector(FeaturesEnum.CAMPAIGN_STATE),
+  (state: State) => state.loading
 );
 export const error = createSelector(
-  createFeatureSelector(FeaturesEnum.CAMPAIGNLIST_STATE),
-  (state: CampaignListState | SalesCampaignState | InsuredTypesState | SeriesState | CustomerCategoryState | CustomerCategoryRefundState | EventHistoryState | DiscountTypeState | PresentsState) => state.error
+  createFeatureSelector(FeaturesEnum.CAMPAIGN_STATE),
+  (state: State) => state.error
 );
 
 export const Selectors = {
@@ -58,6 +62,7 @@ export const Selectors = {
   eventHistory,
   discountType,
   presents,
+  deleteCampaign,
   loading,
   error,
 };

@@ -1,17 +1,6 @@
-import { Action, createReducer, on } from '@ngrx/store';
-import { Actions } from './actions';
-import { 
-  initialState, 
-  CampaignListState, 
-  SalesCampaignState, 
-  InsuredTypesState, 
-  SeriesState, 
-  CustomerCategoryState, 
-  CustomerCategoryRefundState, 
-  EventHistoryState,
-  DiscountTypeState,
-  PresentsState
-} from './state';
+import { Action, createReducer, on } from "@ngrx/store";
+import { Actions } from "./actions";
+import { initialState, State } from "./state";
 
 export const reducer = createReducer(
   initialState,
@@ -27,7 +16,7 @@ export const reducer = createReducer(
   on(Actions.getCampaignListComplete, (state) => ({
     ...state,
     loading: false,
-    error: { error: 'some error' },
+    error: { error: "some error" },
   })),
 
   on(Actions.getSalesCampaign, (state) => ({
@@ -42,7 +31,7 @@ export const reducer = createReducer(
   on(Actions.getSalesCampaignComplete, (state) => ({
     ...state,
     loading: false,
-    error: { error: 'some error' },
+    error: { error: "some error" },
   })),
 
   on(Actions.getInsuredTypes, (state) => ({
@@ -57,7 +46,7 @@ export const reducer = createReducer(
   on(Actions.getInsuredTypesComplete, (state) => ({
     ...state,
     loading: false,
-    error: { error: 'some error' },
+    error: { error: "some error" },
   })),
 
   on(Actions.getSeries, (state) => ({
@@ -72,7 +61,7 @@ export const reducer = createReducer(
   on(Actions.getSeriesComplete, (state) => ({
     ...state,
     loading: false,
-    error: { error: 'some error' },
+    error: { error: "some error" },
   })),
 
   on(Actions.getCustomerCategory, (state) => ({
@@ -87,22 +76,25 @@ export const reducer = createReducer(
   on(Actions.getCustomerCategoryComplete, (state) => ({
     ...state,
     loading: false,
-    error: { error: 'some error' },
+    error: { error: "some error" },
   })),
 
   on(Actions.getCustomerCategoryRefund, (state) => ({
     ...state,
     loading: true,
   })),
-  on(Actions.getCustomerCategoryRefundComplete, (state, { customerCategoryRefund }) => ({
-    ...state,
-    customerCategoryRefund,
-    loading: false,
-  })),
+  on(
+    Actions.getCustomerCategoryRefundComplete,
+    (state, { customerCategoryRefund }) => ({
+      ...state,
+      customerCategoryRefund,
+      loading: false,
+    })
+  ),
   on(Actions.getCustomerCategoryRefundComplete, (state) => ({
     ...state,
     loading: false,
-    error: { error: 'some error' },
+    error: { error: "some error" },
   })),
 
   on(Actions.getEventHistory, (state) => ({
@@ -117,7 +109,7 @@ export const reducer = createReducer(
   on(Actions.getEventHistoryComplete, (state) => ({
     ...state,
     loading: false,
-    error: { error: 'some error' },
+    error: { error: "some error" },
   })),
 
   on(Actions.getDiscountType, (state) => ({
@@ -132,7 +124,7 @@ export const reducer = createReducer(
   on(Actions.getDiscountTypeComplete, (state) => ({
     ...state,
     loading: false,
-    error: { error: 'some error' },
+    error: { error: "some error" },
   })),
 
   on(Actions.getPresents, (state) => ({
@@ -147,24 +139,24 @@ export const reducer = createReducer(
   on(Actions.getPresentsComplete, (state) => ({
     ...state,
     loading: false,
+    error: { error: "some error" },
+  })),
+  on(Actions.deleteCampaign, (state) => ({
+    ...state,
+    loading: true,
+  })),
+  on(Actions.deleteCampaignComplete, (state, { campaignId }) => ({
+    ...state,
+    campaignId,
+    loading: false,
+  })),
+  on(Actions.deleteCampaignComplete, (state) => ({
+    ...state,
+    loading: false,
     error: { error: 'some error' },
   })),
 );
 
-export function reducerFactory(
-  state: 
-    CampaignListState | 
-    SalesCampaignState | 
-    InsuredTypesState | 
-    SeriesState | 
-    CustomerCategoryState | 
-    CustomerCategoryRefundState | 
-    EventHistoryState |
-    DiscountTypeState | 
-    PresentsState |
-    undefined, 
-  actions: 
-    Action
-  ) {
+export function reducerFactory(state: State, actions: Action) {
   return reducer(state, actions);
 }

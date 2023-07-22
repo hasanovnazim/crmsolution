@@ -6,12 +6,12 @@ import { rolesList } from './store/auth/roles/rolesList';
 
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: '/login' },
+  // { path: '', pathMatch: 'full', redirectTo: '/login' },
   {
     path: 'welcome',
     loadChildren: () =>
       import('./pages/welcome/welcome.module').then((m) => m.WelcomeModule),
-      canActivate: [AuthGuard],
+      //canActivate: [AuthGuard],
     // data: {
     //   expectedRole: rolesList.DEBITORS_GET,
     // },
@@ -20,7 +20,7 @@ const routes: Routes = [
     path: 'users',
     loadChildren: () =>
       import('./pages/users/users.module').then((m) => m.UsersModule),
-      canActivate: [AuthGuard],
+      //canActivate: [AuthGuard],
   },
   {
     path: 'campaigns',
@@ -32,7 +32,7 @@ const routes: Routes = [
     path: 'login',
     component: LoginComponent,
   },
-  { path: '**', pathMatch: 'full', redirectTo: '/welcome' },
+  // { path: '**', pathMatch: 'full', redirectTo: '/welcome' },
 ];
 
 @NgModule({

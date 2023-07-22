@@ -1,10 +1,10 @@
-import { CampaignListModel } from '../../../models/campaignList.model';
+import { CampaignListModel } from "../../../models/campaignList.model";
 import {
   NzTableFilterFn,
   NzTableFilterList,
   NzTableSortFn,
   NzTableSortOrder,
-} from 'ng-zorro-antd/table';
+} from "ng-zorro-antd/table";
 
 export interface ColumnItem {
   name: string;
@@ -18,91 +18,92 @@ export interface ColumnItem {
 
 export const columns: ColumnItem[] = [
   {
-    name: 'Kampaniya adı',
+    name: "Kampaniya adı",
     sortOrder: null,
-    sortFn: (a: CampaignListModel, b: CampaignListModel) => a.CampaignName.localeCompare(b.CampaignName),
-    sortDirections: ['ascend', 'descend', null],
+    sortFn: (a: CampaignListModel, b: CampaignListModel) =>
+      a.campaignName.localeCompare(b.campaignName),
+    sortDirections: ["ascend", "descend", null],
     filterMultiple: true,
     listOfFilter: [],
-    filterFn: (list: string[], item: CampaignListModel) => list.some((a) => item.CampaignName.indexOf(a) !== -1),
+    filterFn: (list: string[], item: CampaignListModel) =>
+      list.some((a) => item.campaignName.indexOf(a) !== -1),
   },
   {
-    name: 'Sığorta növü',
+    name: "Sığorta növü",
     sortOrder: null,
-    sortFn: (a: CampaignListModel, b: CampaignListModel) => a.InsuranceType.localeCompare(b.InsuranceType),
-    sortDirections: ['ascend', 'descend', null],
+    sortFn: (a: CampaignListModel, b: CampaignListModel) =>
+      a.promoCode.localeCompare(b.promoCode),
+    sortDirections: ["ascend", "descend", null],
     filterMultiple: true,
     listOfFilter: [],
-    filterFn: (list: string[], item: CampaignListModel) => list.some((a) => item.InsuranceType.indexOf(a) !== -1),
+    filterFn: (list: string[], item: CampaignListModel) =>
+      list.some((a) => item.promoCode.indexOf(a) !== -1),
   },
   {
-    name: 'Seriyalar',
+    name: "Seriyalar",
     sortOrder: null,
-    sortFn: (a: CampaignListModel, b: CampaignListModel) => a.Series.localeCompare(b.Series),
-    sortDirections: ['ascend', 'descend', null],
+    sortFn: (a: CampaignListModel, b: CampaignListModel) =>
+      a.policySeries.localeCompare(b.policySeries),
+    sortDirections: ["ascend", "descend", null],
     filterMultiple: true,
     listOfFilter: [],
-    filterFn: (list: string[], item: CampaignListModel) => list.some((a) => item.Series.indexOf(a) !== -1),
+    filterFn: (list: string[], item: CampaignListModel) =>
+      list.some((a) => item.policySeries.indexOf(a) !== -1),
   },
+  // {
+  //   name: 'Sığortalı növü',
+  //   sortOrder: null,
+  //   sortFn: (a: CampaignListModel, b: CampaignListModel) => a.CustomersCategory.localeCompare(b.CustomersCategory),
+  //   sortDirections: ['ascend', 'descend', null],
+  //   filterMultiple: true,
+  //   listOfFilter: [],
+  //   filterFn: (list: string[], item: CampaignListModel) => list.some((a) => item.CustomersCategory.indexOf(a) !== -1),
+  // },
+  // {
+  //   name: 'Müştəri kateqoriyası',
+  //   sortOrder: null,
+  //   sortFn: (a: CampaignListModel, b: CampaignListModel) => a.SecondCustCat.localeCompare(b.SecondCustCat),
+  //   sortDirections: ['ascend', 'descend', null],
+  //   filterMultiple: true,
+  //   listOfFilter: [],
+  //   filterFn: (list: string[], item: CampaignListModel) => list.some((a) => item.SecondCustCat.indexOf(a) !== -1),
+  // },
+  // {
+  //   name: 'Hadisə tarixçəsi',
+  //   sortOrder: null,
+  //   sortFn: (a: CampaignListModel, b: CampaignListModel) => a.EventHistory.localeCompare(b.EventHistory),
+  //   sortDirections: ['ascend', 'descend', null],
+  //   filterMultiple: true,
+  //   listOfFilter: [],
+  //   filterFn: (list: string[], item: CampaignListModel) => list.some((a) => item.EventHistory.indexOf(a) !== -1),
+  // },
   {
-    name: 'Sığortalı növü',
+    name: "Başlama tarixi",
     sortOrder: null,
-    sortFn: (a: CampaignListModel, b: CampaignListModel) => a.CustomersCategory.localeCompare(b.CustomersCategory),
-    sortDirections: ['ascend', 'descend', null],
+    sortFn: (a: CampaignListModel, b: CampaignListModel) =>
+      a.startDate.localeCompare(b.startDate),
+    sortDirections: ["ascend", "descend", null],
     filterMultiple: true,
     listOfFilter: [],
-    filterFn: (list: string[], item: CampaignListModel) => list.some((a) => item.CustomersCategory.indexOf(a) !== -1),
+    filterFn: (list: string[], item: CampaignListModel) =>
+      list.some((a) => item.startDate.indexOf(a) !== -1),
   },
   {
-    name: 'Müştəri kateqoriyası',
+    name: "Bitmə tarixi",
     sortOrder: null,
-    sortFn: (a: CampaignListModel, b: CampaignListModel) => a.SecondCustCat.localeCompare(b.SecondCustCat),
-    sortDirections: ['ascend', 'descend', null],
+    sortFn: (a: CampaignListModel, b: CampaignListModel) =>
+      a.endDate.localeCompare(b.endDate),
+    sortDirections: ["ascend", "descend", null],
     filterMultiple: true,
     listOfFilter: [],
-    filterFn: (list: string[], item: CampaignListModel) => list.some((a) => item.SecondCustCat.indexOf(a) !== -1),
+    filterFn: (list: string[], item: CampaignListModel) =>
+      list.some((a) => item.endDate.indexOf(a) !== -1),
   },
   {
-    name: 'Hadisə tarixçəsi',
-    sortOrder: null,
-    sortFn: (a: CampaignListModel, b: CampaignListModel) => a.EventHistory.localeCompare(b.EventHistory),
-    sortDirections: ['ascend', 'descend', null],
-    filterMultiple: true,
-    listOfFilter: [],
-    filterFn: (list: string[], item: CampaignListModel) => list.some((a) => item.EventHistory.indexOf(a) !== -1),
-  },
-  {
-    name: 'Başlama tarixi',
-    sortOrder: null,
-    sortFn: (a: CampaignListModel, b: CampaignListModel) => a.StartDate.localeCompare(b.StartDate),
-    sortDirections: ['ascend', 'descend', null],
-    filterMultiple: true,
-    listOfFilter: [],
-    filterFn: (list: string[], item: CampaignListModel) => list.some((a) => item.StartDate.indexOf(a) !== -1),
-  },
-  {
-    name: 'Bitmə tarixi',
-    sortOrder: null,
-    sortFn: (a: CampaignListModel, b: CampaignListModel) => a.ExpireDate.localeCompare(b.ExpireDate),
-    sortDirections: ['ascend', 'descend', null],
-    filterMultiple: true,
-    listOfFilter: [],
-    filterFn: (list: string[], item: CampaignListModel) => list.some((a) => item.ExpireDate.indexOf(a) !== -1),
-  },
-  {
-    name: '',
+    name: "",
     sortOrder: null,
     sortFn: null,
-    sortDirections: ['ascend', 'descend', null],
-    filterMultiple: true,
-    listOfFilter: [],
-    filterFn: null,
-  },
-  {
-    name: '',
-    sortOrder: null,
-    sortFn: null,
-    sortDirections: ['ascend', 'descend', null],
+    sortDirections: ["ascend", "descend", null],
     filterMultiple: true,
     listOfFilter: [],
     filterFn: null,

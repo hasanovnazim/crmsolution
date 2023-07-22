@@ -1,17 +1,17 @@
-import { Injectable } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { ApiService } from '../api.service';
-import { Actions as authActions } from './actions';
-import { catchError, map, of, switchMap, tap } from 'rxjs';
-import { CookieService } from 'ngx-cookie-service';
-import { JwtHelperService } from '@auth0/angular-jwt';
-import { Router } from '@angular/router';
-import { UserModel } from '../../models/user.model';
-import { TokenModel } from 'src/app/models/token.model';
+import { Injectable } from "@angular/core";
+import { Actions, createEffect, ofType } from "@ngrx/effects";
+import { ApiService } from "../api.service";
+import { Actions as authActions } from "./actions";
+import { catchError, map, of, switchMap } from "rxjs";
+import { CookieService } from "ngx-cookie-service";
+import { JwtHelperService } from "@auth0/angular-jwt";
+import { Router } from "@angular/router";
+import { UserModel } from "../../models/user.model";
+import { TokenModel } from "src/app/models/token.model";
 
 interface AuthResponsePayload<T> {
   code: number;
-  data: { result: T };
+  data: T;
   message: string;
   timeStamp: string;
 }
@@ -30,20 +30,19 @@ export class Effects {
         ofType(authActions.getToken),
         switchMap((action) =>
           this.apiService
-            .post<AuthResponsePayload<TokenModel>>('/login', {
+            .post<AuthResponsePayload<TokenModel>>("login", {
               sessionId: action.sessionId,
             })
             .pipe(
               map((auth) => {
-                const token = auth.data.result.token;
+                const token = auth.data.token;
                 const helper = new JwtHelperService();
 
                 const expirationDate = helper.getTokenExpirationDate(token);
-                this.cookieService.set('token', token, {
+                this.cookieService.set("token", token, {
                   expires: expirationDate!,
                 });
-
-                this.router.navigate(['/campaigns']);
+                this.router.navigate(["/campaigns"]);
                 return authActions.getTokenComplete({ token });
               }),
               catchError((error: any) =>
@@ -69,11 +68,11 @@ export class Effects {
     () => () =>
       this.actions$.pipe(
         ofType(authActions.getUserData),
-        switchMap((action) =>
-          this.apiService.get<AuthResponsePayload<UserModel>>('login').pipe(
+        switchMap(() =>
+          this.apiService.get<AuthResponsePayload<UserModel>>("login").pipe(
             map((user) => {
               return authActions.getUserDataComplete({
-                user: { ...user.data.result },
+                user: { ...user.data },
               });
             }),
             catchError((error: any) =>

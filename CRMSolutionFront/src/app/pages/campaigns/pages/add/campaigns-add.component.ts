@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 
-import { NzDatePickerComponent } from "ng-zorro-antd/date-picker";
+import { differenceInCalendarDays } from "date-fns";
 
 import { Facade } from "../../+state/facade";
 
@@ -12,216 +12,310 @@ import { CustomerCategoryRefundModel } from "src/app/models/customerCategoryRefu
 import { EventHistoryModel } from "src/app/models/eventHistory.model";
 import { DiscountTypeModel } from "src/app/models/discountType.model";
 import { PresentsModel } from "src/app/models/presents.model";
-import { DiscountFirstModel } from 'src/app/models/discountFirst.model';
-import { DiscountSecondModel } from 'src/app/models/discountSecond.model';
+import { map, Observable } from "rxjs";
+import { ActivatedRoute, Router } from "@angular/router";
+import { CampaignsService } from "../../services/campaigns.service";
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from "@angular/forms";
+import { UntilDestroy } from "@ngneat/until-destroy";
+import { NotificationService } from "../../../../shared/notification.service";
+import { DiscountDetail } from "../../../../models/campaignList.model";
+import { DisabledTimeFn } from "ng-zorro-antd/date-picker";
 
+@UntilDestroy({ checkProperties: true })
 @Component({
   selector: "app-campaigns-add",
   templateUrl: "./campaigns-add.component.html",
   styleUrls: ["./campaigns-add.component.scss"],
 })
 export class CampaignsAddComponent implements OnInit {
-  salesCampaign: SalesCampaignModel[] = [];
-  insuredTypes: InsuredTypesModel[] = [];
-  series: SeriesModel[] = [];
-  customerCategory: CustomerCategoryModel[] = [];
-  customerCategoryRefund: CustomerCategoryRefundModel[] = [];
-  eventHistory: EventHistoryModel[] = [];
-  discountType: DiscountTypeModel[] = [];
-  presents: PresentsModel[] = [];
-  discountFirst: DiscountFirstModel[] = [];
-  discountSecond: DiscountSecondModel[] = [];
+  salesCampaign$: Observable<SalesCampaignModel[]>;
+  insuredTypes$: Observable<InsuredTypesModel[]>;
+  series$: Observable<SeriesModel[]>;
+  customerCategory$: Observable<CustomerCategoryModel[]>;
+  customerCategoryRefund$: Observable<CustomerCategoryRefundModel[]>;
+  eventHistory$: Observable<EventHistoryModel[]>;
+  discountType$: Observable<DiscountTypeModel[]>;
+  presents$: Observable<PresentsModel[]>;
+  isEdit = false;
+  isLoading = false;
+  campaignReactiveForm: FormGroup;
+  today = new Date();
+  isActiveCampaign = false;
 
-  insuredTypesModel: any;
-  salesCampaignModel: any;
-  seriesModel: any;
-  customerCategoryModel: any;
-  customerCategoryRefundModel: any;
-  eventHistoryModel: any;
-  discountTypeModel: any;
-  presentsModel: any;
-  discountFirstModel: any;
-  discountSecondModel: any;
+  disabledDate = (current: Date): boolean =>
+    differenceInCalendarDays(current, this.today) < 0;
+  disabledEndDate = (current: Date): boolean =>
+    differenceInCalendarDays(
+      current,
+      this.today > this.campaignReactiveForm.get("startDate")?.value
+        ? this.today
+        : this.campaignReactiveForm.get("startDate")?.value
+    ) < 0;
+
+  range(start: number, end: number): number[] {
+    const result: number[] = [];
+    for (let i = start; i < end; i++) {
+      result.push(i);
+    }
+    return result;
+  }
+
+  disabledDateTime: DisabledTimeFn = (v) => {
+    if (differenceInCalendarDays(v as Date, this.today) === 0) {
+      const currentHour = this.today.getHours();
+      const currentMinute = this.today.getMinutes();
+      const disabledHours = this.range(0, currentHour);
+
+      return {
+        nzDisabledHours: () => disabledHours,
+        nzDisabledMinutes: (h) =>
+          disabledHours.indexOf(h) > 0
+            ? this.range(0, 60)
+            : h === currentHour
+            ? this.range(0, currentMinute)
+            : [],
+        nzDisabledSeconds: () => [],
+      };
+    }
+    return {
+      nzDisabledHours: () => [],
+      nzDisabledMinutes: () => [],
+      nzDisabledSeconds: () => [],
+    };
+  };
 
   constructor(
-    private salesCapaignFacede: Facade,
-    private insuredTypesFacede: Facade,
-    private seriesFacede: Facade,
-    private customerCategoryFacede: Facade,
-    private customerCategoryRefundFacede: Facade,
-    private eventHistoryFacede: Facade,
-    private discountTypeFacede: Facade,
-    private presentsFacede: Facade
-  ) {}
+    private campaigngsFacade: Facade,
+    private campaignsService: CampaignsService,
+    private activeRoute: ActivatedRoute,
+    private router: Router,
+    private fb: FormBuilder,
+    private notificationsService: NotificationService
+  ) {
+    this.customerCategory$ = this.campaigngsFacade.customerCategory$;
+    this.customerCategoryRefund$ =
+      this.campaigngsFacade.customerCategoryRefund$;
+    this.eventHistory$ = this.campaigngsFacade.eventHistory$;
+    this.discountType$ = this.campaigngsFacade.discountType$;
+    this.presents$ = this.campaigngsFacade.presents$;
+    this.salesCampaign$ = this.campaigngsFacade.salesCampaign$;
+    this.insuredTypes$ = this.campaigngsFacade.insuredTypes$;
+    this.series$ = this.campaigngsFacade.series$;
+
+    this.campaignReactiveForm = this.fb.group({
+      campaignId: new FormControl(""),
+      insureTypeId: new FormControl("", [Validators.required]),
+      policySeries: new FormControl([], [Validators.required]),
+      productName: new FormControl("", [Validators.required]),
+      startDate: new FormControl(new Date(), [Validators.required]),
+      endDate: new FormControl(new Date(), [Validators.required]),
+      description: new FormControl(""),
+      clientCategoryId: new FormControl("", [Validators.required]),
+      clientCategoryBelongCampaignId: new FormControl("", [
+        Validators.required,
+      ]),
+      choiseClaimHistoryId: new FormControl(null),
+      minimumInsuranceAmount: new FormControl("", [Validators.required]),
+      promoCode: new FormControl(""),
+      campaignType: new FormControl(null),
+      maximumDiscountLimit: new FormControl(null),
+      discountType: new FormControl("null"),
+      discountDetails: this.fb.array([]),
+    });
+  }
+
+  get discountDetails(): FormArray {
+    return this.campaignReactiveForm.get("discountDetails") as FormArray;
+  }
+
+  removeDiscountDetails(index: number) {
+    this.discountDetails.removeAt(index);
+  }
+
+  addDiscountDetails(
+    item: DiscountDetail = {
+      discountDetailId: 0,
+      minInsuranceAmount: "",
+      maxInsuranceAmount: "",
+      discountType: 10,
+      discountAmount: "",
+    }
+  ) {
+    this.discountDetails.push(
+      this.fb.group({
+        // discountDetailId: new FormControl("", [Validators.required]),
+        minInsuranceAmount: new FormControl(item.minInsuranceAmount, [
+          Validators.required,
+        ]),
+        maxInsuranceAmount: new FormControl(item.maxInsuranceAmount, [
+          Validators.required,
+        ]),
+        discountType: new FormControl(
+          this.campaignReactiveForm.get("discountType")?.value ||
+            item.discountType,
+          [Validators.required]
+        ),
+        discountAmount: new FormControl(item.discountAmount, [
+          Validators.required,
+        ]),
+      })
+    );
+  }
 
   ngOnInit(): void {
-    // this.salesCapaignFacede.getSalesCampaign();
-    // this.salesCapaignFacede.salesCampaign$.subscribe((v) => {
-    //   this.salesCampaign = v;
-    // });
+    this.campaignReactiveForm
+      .get("insureTypeId")
+      ?.valueChanges.subscribe((v) => {
+        this.getPolicySeries(v);
+      });
 
-    this.insuredTypesFacede.getInsuredTypes();
-    this.insuredTypesFacede.insuredTypes$.subscribe((v: any) => {
-      this.insuredTypes = v.data;
+    this.campaignReactiveForm
+      .get("discountType")
+      ?.valueChanges.subscribe((v) => {
+        if (!!v && this.discountDetails.controls.length < 1) {
+          this.addDiscountDetails();
+        }
+      });
+
+    this.campaignReactiveForm.get("startDate")?.valueChanges.subscribe((v) => {
+      if (
+        differenceInCalendarDays(
+          v,
+          this.campaignReactiveForm.get("endDate")?.value
+        ) > 0
+      ) {
+        this.campaignReactiveForm.patchValue({
+          endDate: v,
+        });
+      }
     });
 
-    this.seriesFacede.getSeries().subscribe((v:any) => {
-      this.series = v;
+    this.campaignReactiveForm
+      .get("maximumDiscountLimit")
+      ?.valueChanges.subscribe((v) => {
+        if (v > 90) {
+          this.campaignReactiveForm.get("maximumDiscountLimit")?.setValue(90);
+        }
+      });
+    this.activeRoute.paramMap
+      .pipe(map(() => window.history.state))
+      .subscribe((v) => {
+        if (v && v.campaignId) {
+          this.campaignsService
+            .getCampaignByProductIdList(v.campaignId)
+            .subscribe((campaign) => {
+              this.getPolicySeries(campaign.insureTypeId);
+              this.campaignReactiveForm.patchValue({
+                ...campaign,
+                productName: campaign.campaignName,
+                policySeries: (campaign.policySeries as string).split(","),
+                startDate: new Date(campaign.startDate),
+                endDate: new Date(campaign.endDate),
+              });
+              if (campaign.discountDetails && campaign.discountDetails.length) {
+                this.discountDetails.clear();
+                campaign.discountDetails.forEach((v) => {
+                  this.addDiscountDetails(v);
+                });
+              }
+              this.campaignReactiveForm.get("productName")?.disable();
+              this.campaignReactiveForm
+                .get("minimumInsuranceAmount")
+                ?.disable();
+              this.campaignReactiveForm.get("description")?.disable();
+              this.campaignReactiveForm.get("promoCode")?.disable();
+              this.campaignReactiveForm.get("maximumDiscountLimit")?.disable();
+              this.discountDetails.controls.forEach((v) => {
+                v.get("minInsuranceAmount")?.disable();
+                v.get("maxInsuranceAmount")?.disable();
+                v.get("discountAmount")?.disable();
+              });
+
+              if (
+                differenceInCalendarDays(
+                  new Date(campaign.startDate.toString()),
+                  this.today
+                ) < 0
+              ) {
+                this.isActiveCampaign = true;
+              }
+            });
+
+          this.isEdit = true;
+        }
+      });
+    this.campaigngsFacade.getInsuredTypes();
+    this.campaigngsFacade.getSeries();
+  }
+
+  onDateChange(result: Date[]): void {
+    const startDate = result[0];
+    const endDate = result[1];
+
+    this.campaignReactiveForm.patchValue({
+      startDate,
+      endDate,
     });
-    // this.seriesFacede.series$.subscribe((v: any) => {
-    //   this.series = v.data;
-    // });
-
-    // this.customerCategoryFacede.getCustomerCategory();
-    // this.customerCategoryFacede.customerCategory$.subscribe((v:any) => {
-    //   this.customerCategory = v.data;
-    // });
-
-    // this.customerCategoryRefundFacede.getCustomerCategoryRefund();
-    // this.customerCategoryRefundFacede.customerCategoryRefund$.subscribe((v) => {
-    //   this.customerCategoryRefund = v;
-    // });
-
-    // this.eventHistoryFacede.getEventHistory();
-    // this.eventHistoryFacede.eventHistory$.subscribe((v) => {
-    //   this.eventHistory = v;
-    // });
-
-    // this.discountTypeFacede.getDiscountType();
-    // this.discountTypeFacede.discountType$.subscribe((v) => {
-    //   this.discountType = v;
-    // });
-
-    // this.presentsFacede.getPresents();
-    // this.presentsFacede.presents$.subscribe((v) => {
-    //   this.presents = v;
-    // });
   }
 
-  startValue: Date | null = null;
-  endValue: Date | null = null;
-  @ViewChild("endDatePicker") endDatePicker!: NzDatePickerComponent;
-
-  disabledStartDate = (startValue: Date): boolean => {
-    if (!startValue || !this.endValue) {
-      return false;
-    }
-    return startValue.getTime() > this.endValue.getTime();
-  };
-
-  disabledEndDate = (endValue: Date): boolean => {
-    if (!endValue || !this.startValue) {
-      return false;
-    }
-    return endValue.getTime() <= this.startValue.getTime();
-  };
-
-  handleStartOpenChange(open: boolean): void {
-    if (!open) {
-      this.endDatePicker.open();
-    }
-    console.log("handleStartOpenChange", open);
-  }
-
-  handleEndOpenChange(open: boolean): void {
-    console.log("handleEndOpenChange", open);
-  }
-
-  changeDiscount(e?: MouseEvent): void {
-    console.log("change discount");
-    this.discountFirst = [];
-    this.discountSecond = [];
-  }
-
-  changeMinSigorta(e?: number): void {
-    this.minSigorta = e || null;
-  }
-
-  minSigorta: number | null = null;
-  key: string = '';
-
-  changeDiscountFirst(e: Event): any {
-    const target = e.target as HTMLInputElement;
-    const name = target.name;
-    const id = parseInt(target.id);
-    this.discountFirst[id][name as keyof DiscountFirstModel] = parseInt(target.value)
-  }
-  changeDiscountSecond(e: Event): any {
-    const target = e.target as HTMLInputElement;
-    const name = target.name;
-    const id = parseInt(target.id);
-    this.discountSecond[id][name as keyof DiscountSecondModel] = parseInt(target.value)
-  }
-
-  addDiscountFirst(e?: MouseEvent): void {
-    if (e) {
-      e.preventDefault();
-    }
-    const id = this.discountFirst.length > 0 ? this.discountFirst[this.discountFirst.length - 1].id + 1 : 0;
-
-    let minVal = 0;
-
-    if(id === 0) {
-      minVal = this.minSigorta || 0
-    } else {
-      minVal = this.discountFirst[id - 1].maxValue;
-    }
-    const control = {
-      id,
-      minValue: minVal,
-      maxValue: 0,
-      discount: 0
-    };
-
-    this.discountFirst.push(control);
-    console.log("discountFirst", this.discountFirst);
-  }
-
-  removeDiscountFirst(i: { id: number, minValue: number, maxValue: number, discount: number }, e: MouseEvent): void {
-    e.preventDefault();
-    if (this.discountFirst.length > 1) {
-      const index = this.discountFirst.indexOf(i);
-      this.discountFirst.splice(index, 1);
-      console.log(this.discountFirst);
+  submitCampaign() {
+    if (this.campaignReactiveForm.valid) {
+      this.isLoading = true;
+      this.campaignsService
+        .campaignOperation(this.campaignReactiveForm.value, this.isEdit)
+        .subscribe({
+          next: () => {
+            this.notificationsService.show("success", "Əlavə edildi!");
+            this.isLoading = false;
+            setTimeout(() => this.router.navigate(["/campaigns"]), 1000);
+          },
+          error: (err) => {
+            console.log(err);
+            this.notificationsService.show("error", err.error.message);
+            this.isLoading = false;
+          },
+        });
     }
   }
 
-  addDiscountSecond(e?: MouseEvent): void {
-    if (e) {
-      e.preventDefault();
-    }
-    const id = this.discountSecond.length > 0 ? this.discountSecond[this.discountSecond.length - 1].id + 1 : 0;
-
-    let minVal = 0;
-
-    if(id === 0) {
-      minVal = this.minSigorta || 0
-    } else {
-      minVal = this.discountSecond[id - 1].maxValue;
-    }
-
-    const control = {
-      id,
-      minValue: minVal,
-      maxValue: 0,
-      discount: 0
-    };
-    this.discountSecond.push(control);
-    console.log("discountSecond", this.discountSecond);
-  }
-
-  removeDiscountSecond(i: { id: number, minValue: number, maxValue: number, discount: number }, e: MouseEvent): void {
-    e.preventDefault();
-    if (this.discountSecond.length > 1) {
-      const index = this.discountSecond.indexOf(i);
-      this.discountSecond.splice(index, 1);
-      console.log(this.discountSecond);
-    }
-  }
   getPolicySeries(event: any) {
-    this.seriesFacede.getSeries(event).subscribe((v: any) => {
-      debugger
-      this.series = v;
-    });
+    this.campaignReactiveForm.get("policySeries")?.setValue([]);
+    this.campaigngsFacade.getSeries(event);
+  }
+  compareFn = (o1: any, o2: any): boolean =>
+    o1 && o2 ? o1.id === o2.id : o1 === o2;
+
+  discountMinChange(index: number, control: AbstractControl) {
+    const minimumInsuranceAmount = this.campaignReactiveForm.get(
+      "minimumInsuranceAmount"
+    )!.value;
+
+    const minValue = !index
+      ? minimumInsuranceAmount
+      : this.discountDetails.controls[index - 1].get("minInsuranceAmount")!
+          .value + 1;
+
+    if (Number(control.value) < Number(minValue)) {
+      control.setErrors({ incorrect: true });
+    } else {
+      control.setErrors(null);
+    }
+  }
+
+  discountMaxChange(index: number, control: AbstractControl) {
+    const minInsuranceAmount =
+      this.discountDetails.controls[index].get("minInsuranceAmount")!.value;
+    if (Number(control.value) < Number(minInsuranceAmount) + 1) {
+      control.setErrors({ incorrect: true });
+    } else {
+      control.setErrors(null);
+    }
   }
 }

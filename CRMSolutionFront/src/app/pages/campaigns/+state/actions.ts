@@ -46,6 +46,10 @@ const getPresents = createAction(httpActionTypeGenerator('Presents', 'GET').star
 const getPresentsComplete = createAction(httpActionTypeGenerator('Presents', 'GET').complete, props<{ presents: PresentsModel[] }>());
 const getPresentsError = createAction(httpActionTypeGenerator('Presents', 'GET').error);
 
+const deleteCampaign = createAction(httpActionTypeGenerator('DeleteCampaign', 'DELETE').start);
+const deleteCampaignComplete = createAction(httpActionTypeGenerator('DeleteCampaign', 'DELETE').complete, props<{ campaignId: any }>());
+const deleteCampaignError = createAction(httpActionTypeGenerator('DeleteCampaign', 'DELETE').error);
+
 export const Actions = {
   getCampaignList,
   getCampaignListComplete,
@@ -74,4 +78,7 @@ export const Actions = {
   getPresents,
   getPresentsComplete,
   getPresentsError,
+  deleteCampaign,
+  deleteCampaignComplete,
+  deleteCampaignError
 };
